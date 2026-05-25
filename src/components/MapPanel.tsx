@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import L from 'leaflet';
 import {
   CircleMarker, MapContainer, TileLayer, Tooltip as LeafletTooltip, useMap,
 } from 'react-leaflet';
@@ -21,6 +22,24 @@ function MapFocus({ center }: { center: [number, number] }) {
   useEffect(() => {
     map.setView(center, map.getZoom() || 10, { animate: true });
   }, [center, map]);
+
+  return null;
+}
+
+function MapControls() {
+  const map = useMap();
+
+  useEffect(() => {
+    const zoomControl = L.control.zoom({ position: 'bottomright' });
+
+    zoomControl.addTo(map);
+
+    zoomControl.getContainer()?.classList.add('leaflet-zoom-horizontal');
+
+    return () => {
+      zoomControl.remove();
+    };
+  }, [map]);
 
   return null;
 }
@@ -83,12 +102,13 @@ export function MapPanel({
 }: MapPanelProps) {
   return (
     <div className="absolute inset-0 z-0">
-      <MapContainer center={selectedStation.coords} zoom={10} className="absolute inset-0" zoomControl scrollWheelZoom>
+      <MapContainer center={selectedStation.coords} zoom={10} className="absolute inset-0" zoomControl={false} scrollWheelZoom>
         <TileLayer
           url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
           attribution="&copy; OpenStreetMap contributors &copy; CARTO"
         />
         <MapFocus center={selectedStation.coords} />
+        <MapControls />
         <WeatherOverlay center={selectedStation.coords} rainfallMm={weatherRainMm} show={showWeather} />
 
         {stations.map((station) => {

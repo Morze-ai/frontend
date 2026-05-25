@@ -85,6 +85,9 @@ export function InspectorPanel({
     label: dominantFactor.event_type,
   };
 
+  const chartStart = chartSeries[0]?.timestamp;
+  const chartEnd = chartSeries[chartSeries.length - 1]?.timestamp;
+
   if (!isOpen) {
     return (
       <button
@@ -194,6 +197,11 @@ export function InspectorPanel({
                   {sliderLabel(timeValue)}
                 </p>
               </div>
+              {chartStart && chartEnd && (
+                <p className="mb-2 text-[11px] text-slate-500 font-mono">
+                  {formatDate(chartStart)} – {formatDate(chartEnd)}
+                </p>
+              )}
               <div className="h-56">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart
@@ -225,7 +233,15 @@ export function InspectorPanel({
                       stroke="#1e293b"
                       vertical={false}
                     />
-                    <XAxis dataKey="label" hide />
+                    <XAxis
+                      dataKey="label"
+                      stroke="#475569"
+                      fontSize={10}
+                      interval="preserveStartEnd"
+                      tickLine={false}
+                      axisLine={false}
+                      minTickGap={18}
+                    />
                     <YAxis stroke="#475569" fontSize={10} width={32} />
                     <RTooltip
                       contentStyle={{

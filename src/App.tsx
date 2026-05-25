@@ -2,7 +2,6 @@ import 'leaflet/dist/leaflet.css';
 
 import './App.css';
 import { loadDashboard } from './lib/dashboard-api';
-import { formatDate } from './lib/format';
 import { useEffect, useState } from 'react';
 import { AlertTriangle, Info } from 'lucide-react';
 
@@ -13,6 +12,47 @@ import { StationSidebar } from './components/StationSidebar';
 import { TimelineSlider } from './components/TimelineSlider';
 import type { DashboardPayload } from './lib/dashboard-types';
 import { type Tab } from './lib/dashboard-ui';
+
+const FORECAST_STEP_HOURS = 3;
+const FORECAST_HORIZON_HOURS = 48;
+
+function formatTimelineTick(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+
+  return new Intl.DateTimeFormat('pl-PL', {
+    month: 'short',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZone: 'Europe/Warsaw',
+  }).format(date);
+}
+
+function buildForecastSeries(
+  series: DashboardPayload['stations'][number]['series'],
+  predictedWaterLevel: number,
+) {
+  if (series.length === 0) return [];
+
+  const lastPoint = series[series.length - 1];
+  const lastTimestamp = new Date(lastPoint.timestamp);
+  const forecastSteps = FORECAST_HORIZON_HOURS / FORECAST_STEP_HOURS;
+
+  const forecastSeries = Array.from({ length: forecastSteps }, (_, index) => {
+    const step = index + 1;
+    const timestamp = new Date(lastTimestamp.getTime() + step * FORECAST_STEP_HOURS * 3600 * 1000);
+    const ratio = step / forecastSteps;
+
+    return {
+      timestamp: timestamp.toISOString(),
+      water_level_cm: lastPoint.water_level_cm + (predictedWaterLevel - lastPoint.water_level_cm) * ratio,
+      isForecast: true,
+    };
+  });
+
+  return [...series, ...forecastSeries];
+}
 
 function App() {
   const [data, setData] = useState<DashboardPayload | null>(null);
@@ -91,14 +131,15 @@ function App() {
   }
 
   const selectedStation = data.stations.find((station) => station.id === selectedStationId) ?? data.stations[0];
+  const timelineSeries = buildForecastSeries(selectedStation.series, selectedStation.waterLevel.predicted);
   const currentSeriesIndex = Math.min(
-    selectedStation.series.length - 1 + Math.round(timeValue / 3),
-    Math.max(0, selectedStation.series.length - 1),
+    timelineSeries.length - 1,
+    Math.max(0, selectedStation.series.length - 1 + Math.round(timeValue / FORECAST_STEP_HOURS)),
   );
-  const currentPoint = selectedStation.series[currentSeriesIndex] ?? selectedStation.series[selectedStation.series.length - 1];
-  const chartSeries = selectedStation.series.slice(Math.max(0, currentSeriesIndex - 47), currentSeriesIndex + 1).map((point) => ({
+  const currentPoint = timelineSeries[currentSeriesIndex] ?? timelineSeries[timelineSeries.length - 1];
+  const chartSeries = timelineSeries.slice(Math.max(0, currentSeriesIndex - 47), currentSeriesIndex + 1).map((point) => ({
     ...point,
-    label: formatDate(point.timestamp),
+    label: formatTimelineTick(point.timestamp),
   }));
 
   return (

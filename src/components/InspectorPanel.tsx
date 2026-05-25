@@ -68,6 +68,19 @@ export function InspectorPanel({
 }: InspectorPanelProps) {
   const risk = RISK[selectedStation.riskLevel];
 
+  const seasonOrder = ["wiosna", "lato", "jesień", "zima"] as const;
+  const seasonLabels: Record<(typeof seasonOrder)[number], string> = {
+    wiosna: "Wiosna",
+    lato: "Lato",
+    jesień: "Jesień",
+    zima: "Zima",
+  };
+  const sortedSeasonalStats = [...seasonalStats].sort(
+    (left, right) =>
+      seasonOrder.indexOf(left.season.toLowerCase() as (typeof seasonOrder)[number]) -
+      seasonOrder.indexOf(right.season.toLowerCase() as (typeof seasonOrder)[number]),
+  );
+
   const dominantFactor = selectedStation.dominantFactor ?? {
     event_type: "unknown",
     message: "Brak danych o dominującym czynniku",
@@ -399,7 +412,13 @@ export function InspectorPanel({
             <div className="h-56 rounded-xl border border-slate-800 bg-slate-900/60 p-3">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
-                  data={seasonalStats}
+                  data={sortedSeasonalStats.map((season) => ({
+                    ...season,
+                    label:
+                      seasonLabels[
+                        season.season.toLowerCase() as (typeof seasonOrder)[number]
+                      ] ?? season.season,
+                  }))}
                   margin={{ top: 8, right: 8, left: -12, bottom: 0 }}
                 >
                   <CartesianGrid
@@ -407,7 +426,7 @@ export function InspectorPanel({
                     stroke="#1e293b"
                     vertical={false}
                   />
-                  <XAxis dataKey="season" stroke="#475569" fontSize={10} />
+                  <XAxis dataKey="label" stroke="#475569" fontSize={10} />
                   <YAxis stroke="#475569" fontSize={10} />
                   <RTooltip
                     contentStyle={{
@@ -422,7 +441,7 @@ export function InspectorPanel({
                     cursor={{ fill: "rgba(45, 53, 88, 0.34)" }}
                   />
                   <Bar dataKey="mean_cm" radius={[4, 4, 0, 0]}>
-                    {seasonalStats.map((_, index) => (
+                    {sortedSeasonalStats.map((_, index) => (
                       <Cell
                         key={index}
                         fill={

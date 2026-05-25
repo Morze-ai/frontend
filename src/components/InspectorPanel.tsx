@@ -34,6 +34,8 @@ type InspectorPanelProps = {
   chartSeries: Array<{
     timestamp: string;
     water_level_cm: number;
+    safe_level_cm: number;
+    excess_level_cm: number;
     label: string;
   }>;
   historicalEpisodes: NonNullable<
@@ -219,26 +221,24 @@ export function InspectorPanel({
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart
                     data={chartSeries}
-                    margin={{ top: 10, right: 6, left: -12, bottom: 0 }}
+                    margin={{ top: 0, right: 0, left: -0, bottom: 0 }}
                   >
                     <defs>
-                      <linearGradient
-                        id={`grad-${selectedStation.id}`}
-                        x1="0"
-                        y1="0"
-                        x2="0"
-                        y2="1"
-                      >
+                      <linearGradient id={`grad-safe-${selectedStation.id}`} x1="0" y1="0" x2="0" y2="1">
                         <stop
                           offset="10%"
-                          stopColor={risk.color}
+                          stopColor="#22c55e"
                           stopOpacity={0.5}
                         />
                         <stop
                           offset="95%"
-                          stopColor={risk.color}
+                          stopColor="#22c55e"
                           stopOpacity={0}
                         />
+                      </linearGradient>
+                      <linearGradient id="grad-excess" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#ef4444" stopOpacity={0.8} />
+                        <stop offset="100%" stopColor="#ef4444" stopOpacity={0.12} />
                       </linearGradient>
                     </defs>
                     <CartesianGrid
@@ -276,10 +276,19 @@ export function InspectorPanel({
                     />
                     <Area
                       type="monotone"
-                      dataKey="water_level_cm"
-                      stroke={risk.color}
+                      dataKey="safe_level_cm"
+                      stroke="#22c55e"
                       strokeWidth={2}
-                      fill={`url(#grad-${selectedStation.id})`}
+                      fill={`url(#grad-safe-${selectedStation.id})`}
+                      stackId="water"
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="excess_level_cm"
+                      stroke="#f87171"
+                      strokeWidth={2}
+                      fill="url(#grad-excess)"
+                      stackId="water"
                     />
                   </AreaChart>
                 </ResponsiveContainer>
@@ -445,7 +454,7 @@ export function InspectorPanel({
                       <Cell
                         key={index}
                         fill={
-                          ["#22d3ee", "#3b82f6", "#8b5cf6", "#14b8a6"][
+                          ["#73bb40d6", "#f3eb61cf", "#ca8729d9", "#90ddf7c8"][
                             index % 4
                           ]
                         }

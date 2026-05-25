@@ -26,7 +26,7 @@ export function ReportsPanel({ data, onClose }: ReportsPanelProps) {
               <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
               <XAxis dataKey="name" stroke="#475569" fontSize={10} />
               <YAxis stroke="#475569" fontSize={9} domain={[50, 100]} />
-              <RTooltip contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px', fontSize: '12px' }} formatter={(value: any) => [`${Number(value)}%`, 'Accuracy']} />
+              <RTooltip contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px', fontSize: '12px' }}  itemStyle={{ color: "#e2e8f0" }} labelStyle={{ color: "#ffffff" }}formatter={(value: any) => [`${Number(value)}%`, 'Accuracy']}  cursor={{ fill: "rgba(45, 53, 88, 0.34)" }}/>
               <Bar dataKey="accuracy" radius={[4, 4, 0, 0]} label={{ position: 'top', fontSize: 9, fill: '#94a3b8', formatter: (value: any) => `${Number(value)}%` }}>
                 {data.modelReports.map((_, index) => (
                   <Cell key={index} fill={['#22d3ee', '#3b82f6', '#8b5cf6'][index % 3]} />

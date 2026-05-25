@@ -131,16 +131,26 @@ function App() {
   }
 
   const selectedStation = data.stations.find((station) => station.id === selectedStationId) ?? data.stations[0];
-  const timelineSeries = buildForecastSeries(selectedStation.series, selectedStation.waterLevel.predicted);
+  const timelineSeries = buildForecastSeries(
+    selectedStation.series,
+    selectedStation.waterLevel.predicted,
+  );
   const currentSeriesIndex = Math.min(
     timelineSeries.length - 1,
     Math.max(0, selectedStation.series.length - 1 + Math.round(timeValue / FORECAST_STEP_HOURS)),
   );
   const currentPoint = timelineSeries[currentSeriesIndex] ?? timelineSeries[timelineSeries.length - 1];
-  const chartSeries = timelineSeries.slice(Math.max(0, currentSeriesIndex - 47), currentSeriesIndex + 1).map((point) => ({
-    ...point,
-    label: formatTimelineTick(point.timestamp),
-  }));
+  const chartSeries = timelineSeries.slice(Math.max(0, currentSeriesIndex - 47), currentSeriesIndex + 1).map((point) => {
+    const waterLevel = point.water_level_cm;
+    const alarmLimit = selectedStation.waterLevel.alarmLimit;
+
+    return {
+      ...point,
+      label: formatTimelineTick(point.timestamp),
+      safe_level_cm: Math.min(waterLevel, alarmLimit),
+      excess_level_cm: Math.max(waterLevel - alarmLimit, 0),
+    };
+  });
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">

@@ -251,7 +251,7 @@ export function InspectorPanel({
         ))}
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 sidebar-scroll">
         {tab === "overview" && (
           <>
             <div className="grid grid-cols-3 gap-2 text-xs">

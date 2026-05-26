@@ -5,7 +5,7 @@ export function formatDate(value: string) {
 }
 
 export function sliderLabel(value: number) {
-  if (value === 0) return '▶ Bieżąca godzina';
-  if (value < 0) return `↩ ${Math.abs(value)}h temu`;
-  return `↦ Prognoza za ${value}h`;
+  if (value === 0) return '⇅ Bieżąca godzina';
+  if (value < 0) return `← ${Math.abs(value)}h temu`;
+  return `→ Prognoza za ${value}h`;
 }

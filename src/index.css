@@ -5,7 +5,11 @@
   --color-cyber-yellow: #eab308;
   --color-cyber-green: #22c55e;
 }
-
+*:focus{
+  outline: none;
+  border: none;
+  box-shadow: none;
+}
 html, body, #root {
   width: 100%;
   height: 100%;

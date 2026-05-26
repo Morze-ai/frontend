@@ -11,10 +11,7 @@
   &:hover {
     border-color: var(--accent-border);
   }
-  &:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
-  }
+  
 }
 
 .hero {
@@ -181,4 +178,36 @@
     right: 0;
     border-right-color: var(--border);
   }
+}
+
+.leaflet-zoom-horizontal.leaflet-bar {
+  display: inline-flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap;
+  width: max-content;
+  overflow: hidden;
+  border-radius: 10px;
+  box-shadow: 0 10px 20px rgba(2, 6, 23, 0.38);
+}
+
+.leaflet-zoom-horizontal.leaflet-bar a {
+  float: none !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  line-height: 26px;
+  font-size: 16px;
+  border-bottom: 0;
+  border-right: 1px solid rgba(51, 65, 85, 0.95);
+}
+
+.leaflet-zoom-horizontal.leaflet-bar a:last-child {
+  border-right: 0;
+}
+
+.leaflet-zoom-horizontal.leaflet-bar a.leaflet-control-zoom-in,
+.leaflet-zoom-horizontal.leaflet-bar a.leaflet-control-zoom-out {
+  border-radius: 0;
 }

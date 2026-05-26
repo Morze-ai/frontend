@@ -1,7 +1,7 @@
 import 'leaflet/dist/leaflet.css';
 
 import './App.css';
-import { loadDashboard } from './lib/dashboard-api';
+import { loadDashboard, loadShapFeatures } from './lib/dashboard-api';
 import { useEffect, useState } from 'react';
 import { AlertTriangle, Info } from 'lucide-react';
 
@@ -68,9 +68,20 @@ function App() {
   useEffect(() => {
     let alive = true;
 
-    loadDashboard()
-      .then((payload) => {
+    Promise.all([
+      loadDashboard(),
+      loadShapFeatures('mlp_water_level'),
+    ])
+      .then(([payload, shapFeatures]) => {
         if (!alive) return;
+        
+        if (shapFeatures.length > 0) {
+          payload.stations = payload.stations.map(station => ({
+            ...station,
+            shapFeatures,
+          }));
+        }
+        
         setData(payload);
         setSelectedStationId((current) => current ?? payload.selectedStationId ?? payload.stations[0]?.id ?? null);
         setError(null);

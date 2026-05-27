@@ -3,15 +3,20 @@ import { sliderLabel } from "../lib/format";
 type TimelineSliderProps = {
   timeValue: number;
   onChange: (value: number) => void;
+  mobile?: boolean;
 };
 
-export function TimelineSlider({ timeValue, onChange }: TimelineSliderProps) {
+export function TimelineSlider({ timeValue, onChange, mobile = false }: TimelineSliderProps) {
   const minHours = -48;
   const maxHours = 48;
   const position = ((timeValue - minHours) / (maxHours - minHours)) * 100;
 
+  const positionClasses = mobile 
+    ? "w-full" 
+    : "fixed left-3 right-3 md:left-1/2 md:right-auto bottom-24 md:bottom-4 z-40 md:w-[min(920px,calc(100%-2rem))] md:-translate-x-1/2";
+
   return (
-    <div className="fixed left-3 right-3 md:left-1/2 md:right-auto bottom-24 md:bottom-4 z-40 md:w-[min(920px,calc(100%-2rem))] md:-translate-x-1/2 rounded-xl md:rounded-2xl border border-slate-700/70 bg-slate-950/95 backdrop-blur-xl shadow-2xl px-4 md:px-4 py-3 md:py-3">
+    <div className={`${positionClasses} rounded-xl md:rounded-2xl border border-slate-700/70 bg-slate-950/95 backdrop-blur-xl shadow-2xl px-4 md:px-4 py-3 md:py-3`}>
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between text-xs md:text-sm text-slate-400 font-semibold">
           <span className="text-slate-200">-48h</span>

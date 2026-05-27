@@ -383,14 +383,14 @@ function App() {
               />
             </div>
             {/* Timeline Slider in Inspector Drawer */}
-            <div className="bg-slate-950/95 backdrop-blur-xl border-t border-slate-800/80">
-              <TimelineSlider timeValue={timeValue} onChange={setTimeValue} />
+            <div className="bg-slate-950/95 backdrop-blur-xl border-t border-slate-800/80 px-4 py-3">
+              <TimelineSlider timeValue={timeValue} onChange={setTimeValue} mobile={true} />
             </div>
           </div>
         )}
 
-        {/* Reports Panel */}
-        {showReports && (
+        {/* Reports Panel - Desktop only */}
+        {showReports && !sidebarOpen && !inspectorOpen && (
           <div className="hidden lg:block absolute right-90 top-0 bottom-20 z-20 w-105">
             <ReportsPanel data={data} onClose={() => setShowReports(false)} />
           </div>

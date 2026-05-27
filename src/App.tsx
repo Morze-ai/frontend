@@ -239,9 +239,25 @@ function App() {
         </div>
       </header>
 
-      <div className="relative flex-1 overflow-hidden flex flex-col lg:flex-row">
+      <div className="relative flex-1 overflow-hidden flex flex-col lg:flex-row pb-20 lg:pb-0">
+        {/* Sidebar - Hidden on mobile unless opened, visible on desktop */}
+        <div className="hidden lg:flex flex-col shrink-0 w-85 border-r border-slate-800/80 bg-slate-950/85 overflow-hidden order-1">
+          <StationSidebar
+            data={data}
+            selectedStationId={selectedStation.id}
+            weatherNow={data.currentWeather}
+            showWeather={showWeather}
+            showReports={showReports}
+            onSelectStation={(stationId) => {
+              setSelectedStationId(stationId);
+            }}
+            onToggleWeather={() => setShowWeather((visible) => !visible)}
+            onToggleReports={() => setShowReports((visible) => !visible)}
+          />
+        </div>
+
         {/* Map - Full width on mobile, flex-1 on desktop */}
-        <div className="flex-1 overflow-hidden order-2 lg:order-1">
+        <div className="flex-1 overflow-hidden order-2 lg:order-2">
           <MapPanel
             stations={data.stations}
             selectedStation={selectedStation}
@@ -256,27 +272,10 @@ function App() {
           />
         </div>
 
-        {/* Sidebar - Hidden on mobile unless opened, visible on desktop */}
-        <div className="hidden lg:flex flex-col shrink-0 w-85 border-l border-slate-800/80 bg-slate-950/85 overflow-y-auto order-3">
-          <StationSidebar
-            data={data}
-            selectedStationId={selectedStation.id}
-            weatherNow={data.currentWeather}
-            showWeather={showWeather}
-            showReports={showReports}
-            onSelectStation={(stationId) => {
-              setSelectedStationId(stationId);
-              setInspectorOpen(true);
-            }}
-            onToggleWeather={() => setShowWeather((visible) => !visible)}
-            onToggleReports={() => setShowReports((visible) => !visible)}
-          />
-        </div>
-
         {/* Inspector Panel - Hidden on mobile unless opened, visible on desktop */}
-        <div className="hidden lg:block absolute right-0 top-0 bottom-20 z-20 w-90 order-2">
+        <div className="hidden lg:flex flex-col shrink-0 w-90 border-l border-slate-800/80 bg-slate-950/85 overflow-hidden order-3">
           <InspectorPanel
-            isOpen={inspectorOpen}
+            isOpen={true}
             selectedStation={selectedStation}
             currentPoint={currentPoint}
             chartSeries={chartSeries}
@@ -317,7 +316,7 @@ function App() {
                 ✕
               </button>
             </div>
-            <div className="flex-1 overflow-auto">
+            <div className="flex-1 overflow-y-auto">
               <StationSidebar
                 data={data}
                 selectedStationId={selectedStation.id}
@@ -347,7 +346,7 @@ function App() {
                 ✕
               </button>
             </div>
-            <div className="flex-1 overflow-auto">
+            <div className="flex-1 overflow-y-auto">
               <InspectorPanel
                 isOpen={true}
                 selectedStation={selectedStation}
@@ -391,24 +390,30 @@ function App() {
         <TimelineSlider timeValue={timeValue} onChange={setTimeValue} />
 
         {/* Mobile Control Buttons */}
-        <div className="fixed bottom-0 left-0 right-0 z-30 flex gap-3 px-3 py-3 lg:hidden bg-slate-950/95 backdrop-blur-xl border-t border-slate-800/80">
+        <div className="fixed bottom-0 left-0 right-0 z-30 flex gap-3 px-3 py-3 lg:hidden bg-slate-950/95 backdrop-blur-xl border-t border-slate-800/80 flex-wrap">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="flex-1 bg-cyan-500/20 border border-cyan-500/40 rounded-lg md:rounded-xl px-4 py-3 md:py-4 text-sm md:text-base font-semibold text-cyan-300 hover:bg-cyan-500/30 active:bg-cyan-500/40 transition-colors"
+            className="flex-1 min-w-[90px] bg-cyan-500/20 border border-cyan-500/40 rounded-lg px-3 py-3 text-sm font-semibold text-cyan-300 hover:bg-cyan-500/30 active:bg-cyan-500/40 transition-colors"
           >
-            📍 Stacje
+            📍
+            <br />
+            <span className="text-xs">Stacje</span>
           </button>
           <button
             onClick={() => setInspectorOpen(true)}
-            className="flex-1 bg-amber-500/20 border border-amber-500/40 rounded-lg md:rounded-xl px-4 py-3 md:py-4 text-sm md:text-base font-semibold text-amber-300 hover:bg-amber-500/30 active:bg-amber-500/40 transition-colors"
+            className="flex-1 min-w-[90px] bg-amber-500/20 border border-amber-500/40 rounded-lg px-3 py-3 text-sm font-semibold text-amber-300 hover:bg-amber-500/30 active:bg-amber-500/40 transition-colors"
           >
-            📊 Szczegóły
+            📊
+            <br />
+            <span className="text-xs">Szczegóły</span>
           </button>
           <button
             onClick={() => setShowWeather(!showWeather)}
-            className={`flex-1 rounded-lg md:rounded-xl px-4 py-3 md:py-4 text-sm md:text-base font-semibold transition-colors ${showWeather ? "bg-blue-500/20 border border-blue-500/40 text-blue-300 hover:bg-blue-500/30" : "bg-slate-700/30 border border-slate-700/50 text-slate-400 hover:bg-slate-700/40"}`}
+            className={`flex-1 min-w-[90px] rounded-lg px-3 py-3 text-sm font-semibold transition-colors ${showWeather ? "bg-blue-500/20 border border-blue-500/40 text-blue-300 hover:bg-blue-500/30" : "bg-slate-700/30 border border-slate-700/50 text-slate-400 hover:bg-slate-700/40"}`}
           >
-            ☁️ Pogoda
+            ☁️
+            <br />
+            <span className="text-xs">Pogoda</span>
           </button>
         </div>
       </div>

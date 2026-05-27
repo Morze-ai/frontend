@@ -252,54 +252,63 @@ function App() {
           onOpenInspector={() => setInspectorOpen(true)}
         />
 
-        <StationSidebar
-          data={data}
-          selectedStationId={selectedStation.id}
-          weatherNow={data.currentWeather}
-          showWeather={showWeather}
-          showReports={showReports}
-          onSelectStation={(stationId) => {
-            setSelectedStationId(stationId);
-            setInspectorOpen(true);
-          }}
-          onToggleWeather={() => setShowWeather((visible) => !visible)}
-          onToggleReports={() => setShowReports((visible) => !visible)}
-        />
+        {/* Desktop Sidebar - Hidden on mobile */}
+        <div className="hidden lg:block">
+          <StationSidebar
+            data={data}
+            selectedStationId={selectedStation.id}
+            weatherNow={data.currentWeather}
+            showWeather={showWeather}
+            showReports={showReports}
+            onSelectStation={(stationId) => {
+              setSelectedStationId(stationId);
+              setInspectorOpen(true);
+            }}
+            onToggleWeather={() => setShowWeather((visible) => !visible)}
+            onToggleReports={() => setShowReports((visible) => !visible)}
+          />
+        </div>
 
         {showReports && (
           <ReportsPanel data={data} onClose={() => setShowReports(false)} />
         )}
 
-        <InspectorPanel
-          isOpen={inspectorOpen}
-          selectedStation={selectedStation}
-          currentPoint={currentPoint}
-          chartSeries={chartSeries}
-          historicalEpisodes={
-            data.historicalEpisodes[selectedStation.id] ??
-            selectedStation.historicalEpisodes
-          }
-          similarEpisodes={
-            data.similarEpisodes[selectedStation.id] ??
-            selectedStation.similarEpisodes
-          }
-          seasonalStats={
-            data.seasonalStats[selectedStation.id] ??
-            selectedStation.seasonalStats
-          }
-          monthlyStats={
-            data.monthlyStats[selectedStation.id] ??
-            selectedStation.monthlyStats
-          }
-          monthsPl={data.monthsPl}
-          timeValue={timeValue}
-          tab={tab}
-          onTabChange={setTab}
-          onClose={() => setInspectorOpen(false)}
-          onOpen={() => setInspectorOpen(true)}
-        />
+        {/* Desktop Inspector - Hidden on mobile */}
+        <div className="hidden lg:block">
+          <InspectorPanel
+            isOpen={inspectorOpen}
+            selectedStation={selectedStation}
+            currentPoint={currentPoint}
+            chartSeries={chartSeries}
+            historicalEpisodes={
+              data.historicalEpisodes[selectedStation.id] ??
+              selectedStation.historicalEpisodes
+            }
+            similarEpisodes={
+              data.similarEpisodes[selectedStation.id] ??
+              selectedStation.similarEpisodes
+            }
+            seasonalStats={
+              data.seasonalStats[selectedStation.id] ??
+              selectedStation.seasonalStats
+            }
+            monthlyStats={
+              data.monthlyStats[selectedStation.id] ??
+              selectedStation.monthlyStats
+            }
+            monthsPl={data.monthsPl}
+            timeValue={timeValue}
+            tab={tab}
+            onTabChange={setTab}
+            onClose={() => setInspectorOpen(false)}
+            onOpen={() => setInspectorOpen(true)}
+          />
+        </div>
 
-        <TimelineSlider timeValue={timeValue} onChange={setTimeValue} />
+        {/* Desktop Timeline - Hidden on mobile */}
+        <div className="hidden lg:block">
+          <TimelineSlider timeValue={timeValue} onChange={setTimeValue} />
+        </div>
 
         {/* Mobile Sidebar Drawer */}
         {sidebarOpen && (
@@ -343,7 +352,7 @@ function App() {
                 ✕
               </button>
             </div>
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto pb-24">
               <InspectorPanel
                 isOpen={true}
                 selectedStation={selectedStation}
@@ -373,6 +382,10 @@ function App() {
                 onOpen={() => setInspectorOpen(true)}
               />
             </div>
+            {/* Timeline Slider in Inspector Drawer */}
+            <div className="bg-slate-950/95 backdrop-blur-xl border-t border-slate-800/80">
+              <TimelineSlider timeValue={timeValue} onChange={setTimeValue} />
+            </div>
           </div>
         )}
 
@@ -382,9 +395,6 @@ function App() {
             <ReportsPanel data={data} onClose={() => setShowReports(false)} />
           </div>
         )}
-
-        {/* Timeline Slider - Always visible at bottom */}
-        <TimelineSlider timeValue={timeValue} onChange={setTimeValue} />
 
         {/* Mobile Control Buttons */}
         <div className="fixed bottom-0 left-0 right-0 z-30 flex gap-3 px-3 py-3 lg:hidden bg-slate-950/95 backdrop-blur-xl border-t border-slate-800/80 flex-wrap">

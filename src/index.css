@@ -5,19 +5,31 @@
   --color-cyber-yellow: #eab308;
   --color-cyber-green: #22c55e;
 }
-*:focus{
+*:focus {
   outline: none;
   border: none;
   box-shadow: none;
 }
-html, body, #root {
+html,
+body,
+#root {
   width: 100%;
   height: 100%;
   margin: 0;
   padding: 0;
 }
 
+/* Mobile-friendly touch targets */
+@media (max-width: 768px) {
+  button,
+  a,
+  [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
 
+/* Responsive scrollbar */
 .sidebar-scroll::-webkit-scrollbar {
   width: 6px;
 }
@@ -32,16 +44,32 @@ html, body, #root {
   border: 3px solid transparent;
 }
 
+/* Mobile scrollbar */
+@media (max-width: 768px) {
+  .sidebar-scroll::-webkit-scrollbar {
+    width: 4px;
+  }
+}
 
 .leaflet-container {
   width: 100%;
   height: 100%;
-  background: #020617; /* Zmiana tla na bardzo ciemne przed zaladowaniem kafelkow */
+  background: #020617;
 }
 
-/* Usunięcie obrysu przy fokucie na mapie */
 .leaflet-container:focus {
   outline: none;
+}
+
+/* Leaflet mobile improvements */
+@media (max-width: 768px) {
+  .leaflet-control-zoom {
+    display: none !important;
+  }
+
+  .leaflet-bottom.leaflet-right {
+    display: none !important;
+  }
 }
 
 /* Styl dla tooltipów na mapie */
@@ -50,7 +78,10 @@ html, body, #root {
   color: #fff !important;
   border: 1px solid #334155 !important;
   border-radius: 6px !important;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1) !important;
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.1),
+    0 2px 4px -2px rgb(0 0 0 / 0.1) !important;
+  font-size: 12px !important;
 }
 
 .leaflet-tooltip-top:before {
@@ -59,9 +90,18 @@ html, body, #root {
 
 /* Animacja ping dla markerów */
 @keyframes ping-radar {
-  0% { transform: scale(1); opacity: 1; }
-  75% { transform: scale(2.5); opacity: 0; }
-  100% { transform: scale(3); opacity: 0; }
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  75% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(3);
+    opacity: 0;
+  }
 }
 
 .critical-ping-marker {
@@ -70,14 +110,47 @@ html, body, #root {
 }
 
 /* Ukrycie domyslnego suwaka w range input */
-input[type=range]::-webkit-slider-thumb {
+input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
   width: 0;
   height: 0;
 }
-input[type=range]::-moz-range-thumb {
+input[type="range"]::-moz-range-thumb {
   width: 0;
   height: 0;
   border: 0;
+}
+
+/* Prevent zoom on input focus on iOS */
+@supports (-webkit-touch-callout: none) {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}
+
+/* Better header spacing on mobile */
+@media (max-width: 640px) {
+  header {
+    padding: 0.75rem 0.75rem !important;
+  }
+
+  h1 {
+    font-size: 1.25rem !important;
+  }
+}
+
+/* Smooth transitions for mobile */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  -webkit-user-select: none;
+  user-select: none;
 }

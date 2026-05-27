@@ -204,49 +204,49 @@ export function InspectorPanel({
   }
 
   return (
-    <section className="absolute top-4 right-4 bottom-[108px] z-20 w-[420px] max-w-[calc(100vw-2rem)] rounded-2xl border border-slate-700/70 bg-slate-950/95 backdrop-blur-xl shadow-2xl overflow-hidden flex flex-col">
+    <section className="w-full h-full rounded-2xl border border-slate-700/70 bg-slate-950/95 backdrop-blur-xl shadow-2xl overflow-hidden flex flex-col">
       <div className="p-4 border-b border-slate-800 flex items-start justify-between gap-4">
-        <div>
-          <p className="text-[10px] uppercase tracking-[0.3em] text-slate-500">
-            Inspektor stacji
+        <div className="flex-1 min-w-0">
+          <p className="text-xs uppercase tracking-[0.3em] text-slate-400 font-semibold">
+            Szczegóły stacji
           </p>
-          <h2 className="text-xl font-bold text-white leading-tight">
+          <h2 className="text-lg font-bold text-white leading-tight truncate mt-1">
             {selectedStation.name}
           </h2>
           <span
-            className={`inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider border ${risk.bg}`}
+            className={`inline-flex items-center gap-1 mt-2 px-3 py-1 rounded text-xs font-bold uppercase tracking-wider border ${risk.bg}`}
             style={{ color: risk.color, borderColor: risk.color + "60" }}
           >
             {selectedStation.riskLevel === "Critical" && (
-              <AlertTriangle size={10} />
+              <AlertTriangle size={12} />
             )}
             {risk.label}
           </span>
         </div>
         <button
           onClick={onClose}
-          className="text-slate-500 hover:text-slate-200 text-lg leading-none"
+          className="text-slate-400 hover:text-slate-100 text-2xl leading-none shrink-0"
         >
           ✕
         </button>
       </div>
 
-      <div className="flex border-b border-slate-800 bg-slate-900/60">
+      <div className="flex border-b border-slate-800 bg-slate-900/60 overflow-x-auto">
         {(
           [
-            ["overview", <AlertTriangle size={12} />, "Przegląd"],
-            ["history", <Clock size={12} />, "Historia"],
-            ["seasonal", <TrendingUp size={12} />, "Sezonowość"],
-            ["similar", <BarChart2 size={12} />, "Podobne"],
+            ["overview", <AlertTriangle size={14} />, "Przegląd"],
+            ["history", <Clock size={14} />, "Historia"],
+            ["seasonal", <TrendingUp size={14} />, "Sezonowość"],
+            ["similar", <BarChart2 size={14} />, "Podobne"],
           ] as [Tab, ReactNode, string][]
         ).map(([id, icon, label]) => (
           <button
             key={id}
             onClick={() => onTabChange(id)}
-            className={`flex-1 flex items-center justify-center gap-1 py-2.5 text-[11px] font-medium transition-colors border-b-2 ${tab === id ? "border-cyan-500 text-cyan-400" : "border-transparent text-slate-500 hover:text-slate-300"}`}
+            className={`flex items-center justify-center gap-2 py-3 px-3 text-sm font-semibold transition-colors border-b-2 whitespace-nowrap ${tab === id ? "border-cyan-500 text-cyan-300" : "border-transparent text-slate-400 hover:text-slate-200"}`}
           >
             {icon}
-            {label}
+            <span className="hidden sm:inline">{label}</span>
           </button>
         ))}
       </div>
@@ -254,7 +254,7 @@ export function InspectorPanel({
       <div className="flex-1 overflow-y-auto p-4 space-y-4 sidebar-scroll">
         {tab === "overview" && (
           <>
-            <div className="grid grid-cols-3 gap-2 text-xs">
+            <div className="grid grid-cols-3 gap-2 text-sm">
               {[
                 {
                   label: "Aktualny",
@@ -280,37 +280,39 @@ export function InspectorPanel({
                   key={metric.label}
                   className="rounded-xl border border-slate-800 bg-slate-900/70 p-3"
                 >
-                  <p className="text-slate-500">{metric.label}</p>
+                  <p className="text-slate-400 text-xs font-semibold">
+                    {metric.label}
+                  </p>
                   <p
-                    className={`mt-1 font-mono text-lg font-bold ${metric.color}`}
+                    className={`mt-2 font-mono text-lg font-bold ${metric.color}`}
                     style={metric.style}
                   >
                     {metric.value}{" "}
-                    <span className="text-xs text-slate-500">cm</span>
+                    <span className="text-[11px] text-slate-500">cm</span>
                   </p>
                 </div>
               ))}
             </div>
 
-            <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-3">
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-[10px] uppercase tracking-widest text-slate-500">
+            <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-xs uppercase tracking-widest text-slate-400 font-bold">
                   Poziom wody
                 </p>
-                <p className="text-[10px] text-slate-400">
+                <p className="text-xs text-slate-400 font-semibold">
                   {sliderLabel(timeValue)}
                 </p>
               </div>
               {chartStart && chartEnd && (
-                <p className="mb-2 text-[11px] text-slate-500 font-mono">
+                <p className="mb-3 text-sm text-slate-500 font-mono">
                   {formatDate(chartStart)} – {formatDate(chartEnd)}
                 </p>
               )}
-              <div className="h-56">
+              <div className="h-40 md:h-56">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart
                     data={chartSeries}
-                    margin={{ top: 0, right: 0, left: -0, bottom: 0 }}
+                    margin={{ top: 0, right: 0, left: -20, bottom: 0 }}
                   >
                     <defs>
                       <linearGradient
@@ -406,40 +408,40 @@ export function InspectorPanel({
               </div>
             </div>
 
-            <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-3">
-              <div className="flex items-start gap-3">
+            <div className="rounded-lg md:rounded-xl border border-slate-800 bg-slate-900/60 p-2 md:p-3">
+              <div className="flex items-start gap-2 md:gap-3">
                 <div
-                  className={`p-2 rounded-full shrink-0 ${dominantEvent.bg}`}
+                  className={`p-1.5 md:p-2 rounded-full shrink-0 ${dominantEvent.bg}`}
                 >
                   <span className={dominantEvent.color}>
                     {dominantEvent.icon}
                   </span>
                 </div>
-                <div>
+                <div className="flex-1 min-w-0">
                   <p
                     className={`text-xs font-bold uppercase tracking-wider ${dominantEvent.color}`}
                   >
                     {dominantEvent.label}
                   </p>
-                  <p className="text-sm text-slate-300 mt-2 leading-relaxed">
+                  <p className="text-xs md:text-sm text-slate-300 mt-1 md:mt-2 leading-relaxed">
                     {dominantFactor.message}
                   </p>{" "}
-                  <div className="grid grid-cols-3 gap-2 mt-3 text-[11px] text-slate-300">
-                    <div className="rounded-lg bg-slate-950/70 p-2 border border-slate-800">
-                      <p className="text-slate-500">Pewność</p>
-                      <p className="font-semibold text-white">
+                  <div className="grid grid-cols-3 gap-1 md:gap-2 mt-2 md:mt-3 text-[10px] md:text-[11px] text-slate-300">
+                    <div className="rounded-lg bg-slate-950/70 p-1.5 md:p-2 border border-slate-800">
+                      <p className="text-slate-500 text-[9px]">Pewność</p>
+                      <p className="font-semibold text-white text-xs">
                         {Math.round((dominantFactor?.confidence ?? 0) * 100)}%
                       </p>
                     </div>
-                    <div className="rounded-lg bg-slate-950/70 p-2 border border-slate-800">
-                      <p className="text-slate-500">Wartość</p>
-                      <p className="font-semibold text-white">
+                    <div className="rounded-lg bg-slate-950/70 p-1.5 md:p-2 border border-slate-800">
+                      <p className="text-slate-500 text-[9px]">Wartość</p>
+                      <p className="font-semibold text-white text-xs">
                         {dominantFactor.metadata?.value ?? "-"}
                       </p>
                     </div>
-                    <div className="rounded-lg bg-slate-950/70 p-2 border border-slate-800">
-                      <p className="text-slate-500">Próg</p>
-                      <p className="font-semibold text-white">
+                    <div className="rounded-lg bg-slate-950/70 p-1.5 md:p-2 border border-slate-800">
+                      <p className="text-slate-500 text-[9px]">Próg</p>
+                      <p className="font-semibold text-white text-xs">
                         {dominantFactor.metadata?.threshold ?? "-"}
                       </p>
                     </div>
@@ -448,20 +450,20 @@ export function InspectorPanel({
               </div>
             </div>
 
-            <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-3">
-              <p className="text-[10px] uppercase tracking-widest text-slate-500 mb-2">
+            <div className="rounded-lg md:rounded-xl border border-slate-800 bg-slate-900/60 p-2 md:p-3">
+              <p className="text-[9px] md:text-[10px] uppercase tracking-widest text-slate-500 mb-2">
                 SHAP / wpływ cech
               </p>
-              <div className="space-y-2">
+              <div className="space-y-1.5 md:space-y-2">
                 {selectedStation.shapFeatures.map((feature) => (
                   <div
                     key={feature.name}
-                    className="flex items-center gap-3 text-xs"
+                    className="flex items-center gap-2 md:gap-3 text-[10px] md:text-xs"
                   >
-                    <span className="w-28 shrink-0 text-slate-300">
+                    <span className="w-24 md:w-28 shrink-0 text-slate-300 truncate">
                       {translateShapName(feature.name)}
                     </span>
-                    <div className="flex-1 h-2 rounded-full bg-slate-800 overflow-hidden">
+                    <div className="flex-1 h-1.5 md:h-2 rounded-full bg-slate-800 overflow-hidden">
                       <div
                         className="h-full rounded-full"
                         style={{
@@ -471,7 +473,7 @@ export function InspectorPanel({
                         }}
                       />
                     </div>
-                    <span className="w-10 text-right font-mono text-slate-400">
+                    <span className="w-8 md:w-10 text-right font-mono text-slate-400 text-[9px] md:text-xs">
                       {Math.round(feature.importance * 100)}%
                     </span>
                   </div>
@@ -482,41 +484,41 @@ export function InspectorPanel({
         )}
 
         {tab === "history" && (
-          <div className="space-y-3">
+          <div className="space-y-2 md:space-y-3">
             {historicalEpisodes.length === 0 ? (
-              <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4 text-sm text-slate-400">
+              <div className="rounded-lg md:rounded-xl border border-slate-800 bg-slate-900/60 p-3 md:p-4 text-xs md:text-sm text-slate-400">
                 Brak epizodów historycznych dla tej stacji.
               </div>
             ) : (
               historicalEpisodes.map((episode, index) => (
                 <div
                   key={`${episode.start}-${index}`}
-                  className="rounded-xl border border-slate-800 bg-slate-900/60 p-3"
+                  className="rounded-lg md:rounded-xl border border-slate-800 bg-slate-900/60 p-2 md:p-3"
                 >
-                  <div className="flex items-center justify-between gap-3">
-                    <p className="font-semibold text-white">
+                  <div className="flex items-center justify-between gap-2 md:gap-3">
+                    <p className="font-semibold text-white text-sm">
                       Epizod #{index + 1}
                     </p>
-                    <p className="text-[11px] text-slate-400">
+                    <p className="text-[10px] md:text-[11px] text-slate-400">
                       {episode.duration_hours} h
                     </p>
                   </div>
-                  <div className="mt-3 grid grid-cols-3 gap-2 text-[11px] text-slate-300">
-                    <div className="rounded-lg bg-slate-950/70 p-2 border border-slate-800">
-                      <p className="text-slate-500">Start</p>
-                      <p className="font-mono text-white">
+                  <div className="mt-2 md:mt-3 grid grid-cols-3 gap-1 md:gap-2 text-[10px] md:text-[11px] text-slate-300">
+                    <div className="rounded-lg bg-slate-950/70 p-1.5 md:p-2 border border-slate-800">
+                      <p className="text-slate-500 text-[9px]">Start</p>
+                      <p className="font-mono text-white text-xs">
                         {formatDate(episode.start)}
                       </p>
                     </div>
-                    <div className="rounded-lg bg-slate-950/70 p-2 border border-slate-800">
-                      <p className="text-slate-500">Szczyt</p>
-                      <p className="font-mono text-white">
+                    <div className="rounded-lg bg-slate-950/70 p-1.5 md:p-2 border border-slate-800">
+                      <p className="text-slate-500 text-[9px]">Szczyt</p>
+                      <p className="font-mono text-white text-xs">
                         {episode.peak_cm} cm
                       </p>
                     </div>
-                    <div className="rounded-lg bg-slate-950/70 p-2 border border-slate-800">
-                      <p className="text-slate-500">Koniec</p>
-                      <p className="font-mono text-white">
+                    <div className="rounded-lg bg-slate-950/70 p-1.5 md:p-2 border border-slate-800">
+                      <p className="text-slate-500 text-[9px]">Koniec</p>
+                      <p className="font-mono text-white text-xs">
                         {formatDate(episode.end)}
                       </p>
                     </div>
@@ -528,8 +530,8 @@ export function InspectorPanel({
         )}
 
         {tab === "seasonal" && (
-          <div className="space-y-4">
-            <div className="h-56 rounded-xl border border-slate-800 bg-slate-900/60 p-3">
+          <div className="space-y-2 md:space-y-4">
+            <div className="h-36 md:h-56 rounded-lg md:rounded-xl border border-slate-800 bg-slate-900/60 p-2 md:p-3">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
                   data={sortedSeasonalStats.map((season) => ({
@@ -539,28 +541,28 @@ export function InspectorPanel({
                         season.season.toLowerCase() as (typeof seasonOrder)[number]
                       ] ?? season.season,
                   }))}
-                  margin={{ top: 8, right: 8, left: -12, bottom: 0 }}
+                  margin={{ top: 4, right: 4, left: -20, bottom: 0 }}
                 >
                   <CartesianGrid
                     strokeDasharray="3 3"
                     stroke="#1e293b"
                     vertical={false}
                   />
-                  <XAxis dataKey="label" stroke="#475569" fontSize={10} />
-                  <YAxis stroke="#475569" fontSize={10} />
+                  <XAxis dataKey="label" stroke="#475569" fontSize={9} />
+                  <YAxis stroke="#475569" fontSize={9} />
                   <RTooltip
                     contentStyle={{
                       backgroundColor: "#020617",
                       color: "#e2e8f0",
                       border: "1px solid #334155",
                       borderRadius: "8px",
-                      fontSize: "12px",
+                      fontSize: "11px",
                     }}
                     itemStyle={{ color: "#e2e8f0" }}
                     labelStyle={{ color: "#ffffff" }}
                     cursor={{ fill: "rgba(45, 53, 88, 0.34)" }}
                   />
-                  <Bar dataKey="mean_cm" radius={[4, 4, 0, 0]}>
+                  <Bar dataKey="mean_cm" radius={[3, 3, 0, 0]}>
                     {sortedSeasonalStats.map((_, index) => (
                       <Cell
                         key={index}
@@ -575,14 +577,14 @@ export function InspectorPanel({
                 </BarChart>
               </ResponsiveContainer>
             </div>
-            <div className="h-48 rounded-xl border border-slate-800 bg-slate-900/60 p-3">
+            <div className="h-32 md:h-48 rounded-lg md:rounded-xl border border-slate-800 bg-slate-900/60 p-2 md:p-3">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart
                   data={monthlyStats.map((month) => ({
                     ...month,
                     label: monthsPl[month.month - 1] ?? String(month.month),
                   }))}
-                  margin={{ top: 8, right: 8, left: -12, bottom: 0 }}
+                  margin={{ top: 4, right: 4, left: -20, bottom: 0 }}
                 >
                   <CartesianGrid
                     strokeDasharray="3 3"
@@ -598,6 +600,14 @@ export function InspectorPanel({
                       borderRadius: "8px",
                       fontSize: "12px",
                     }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="min_cm"
+                    stroke="#94a3b8"
+                    strokeWidth={1}
+                    dot={false}
+                    strokeDasharray="3 3"
                   />
                   <Line
                     type="monotone"
@@ -621,41 +631,41 @@ export function InspectorPanel({
         )}
 
         {tab === "similar" && (
-          <div className="space-y-3">
+          <div className="space-y-2 md:space-y-3">
             {similarEpisodes.length === 0 ? (
-              <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4 text-sm text-slate-400">
+              <div className="rounded-lg md:rounded-xl border border-slate-800 bg-slate-900/60 p-3 md:p-4 text-xs md:text-sm text-slate-400">
                 Brak podobnych epizodów dla tej stacji.
               </div>
             ) : (
               similarEpisodes.map((episode, index) => (
                 <div
                   key={`${episode.timestamp}-${index}`}
-                  className="rounded-xl border border-slate-800 bg-slate-900/60 p-3"
+                  className="rounded-lg md:rounded-xl border border-slate-800 bg-slate-900/60 p-2 md:p-3"
                 >
-                  <div className="flex items-center justify-between gap-3">
-                    <p className="font-semibold text-white">
+                  <div className="flex items-center justify-between gap-2 md:gap-3">
+                    <p className="font-semibold text-white text-sm">
                       Podobny epizod #{index + 1}
                     </p>
-                    <p className="text-[11px] text-cyan-300">
+                    <p className="text-[10px] md:text-[11px] text-cyan-300">
                       {Math.round(episode.similarity_score * 100)}%
                     </p>
                   </div>
-                  <div className="mt-3 grid grid-cols-3 gap-2 text-[11px] text-slate-300">
-                    <div className="rounded-lg bg-slate-950/70 p-2 border border-slate-800">
-                      <p className="text-slate-500">Data</p>
-                      <p className="font-mono text-white">
+                  <div className="mt-2 md:mt-3 grid grid-cols-3 gap-1 md:gap-2 text-[10px] md:text-[11px] text-slate-300">
+                    <div className="rounded-lg bg-slate-950/70 p-1.5 md:p-2 border border-slate-800">
+                      <p className="text-slate-500 text-[9px]">Data</p>
+                      <p className="font-mono text-white text-xs">
                         {formatDate(episode.timestamp)}
                       </p>
                     </div>
-                    <div className="rounded-lg bg-slate-950/70 p-2 border border-slate-800">
-                      <p className="text-slate-500">Deszcz 72h</p>
-                      <p className="font-mono text-white">
+                    <div className="rounded-lg bg-slate-950/70 p-1.5 md:p-2 border border-slate-800">
+                      <p className="text-slate-500 text-[9px]">Deszcz 72h</p>
+                      <p className="font-mono text-white text-xs">
                         {episode.rain_72h_mm} mm
                       </p>
                     </div>
-                    <div className="rounded-lg bg-slate-950/70 p-2 border border-slate-800">
-                      <p className="text-slate-500">Poziom</p>
-                      <p className="font-mono text-white">
+                    <div className="rounded-lg bg-slate-950/70 p-1.5 md:p-2 border border-slate-800">
+                      <p className="text-slate-500 text-[9px]">Poziom</p>
+                      <p className="font-mono text-white text-xs">
                         {episode.water_level_cm} cm
                       </p>
                     </div>

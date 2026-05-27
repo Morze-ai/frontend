@@ -239,70 +239,67 @@ function App() {
         </div>
       </header>
 
-      <div className="relative flex-1 overflow-hidden flex flex-col lg:flex-row pb-20 lg:pb-0">
-        {/* Sidebar - Hidden on mobile unless opened, visible on desktop */}
-        <div className="hidden lg:flex flex-col shrink-0 w-85 border-r border-slate-800/80 bg-slate-950/85 overflow-hidden order-1">
-          <StationSidebar
-            data={data}
-            selectedStationId={selectedStation.id}
-            weatherNow={data.currentWeather}
-            showWeather={showWeather}
-            showReports={showReports}
-            onSelectStation={(stationId) => {
-              setSelectedStationId(stationId);
-            }}
-            onToggleWeather={() => setShowWeather((visible) => !visible)}
-            onToggleReports={() => setShowReports((visible) => !visible)}
-          />
-        </div>
+      <div className="relative flex-1 overflow-hidden">
+        <MapPanel
+          stations={data.stations}
+          selectedStation={selectedStation}
+          weatherRainMm={data.currentWeather.rainfall_mm}
+          showWeather={showWeather}
+          onSelectStation={(stationId) => {
+            setSelectedStationId(stationId);
+            setInspectorOpen(true);
+          }}
+          onOpenInspector={() => setInspectorOpen(true)}
+        />
 
-        {/* Map - Full width on mobile, flex-1 on desktop */}
-        <div className="flex-1 overflow-hidden order-2 lg:order-2">
-          <MapPanel
-            stations={data.stations}
-            selectedStation={selectedStation}
-            weatherRainMm={data.currentWeather.rainfall_mm}
-            showWeather={showWeather}
-            onSelectStation={(stationId) => {
-              setSelectedStationId(stationId);
-              setInspectorOpen(true);
-              setSidebarOpen(false);
-            }}
-            onOpenInspector={() => setInspectorOpen(true)}
-          />
-        </div>
+        <StationSidebar
+          data={data}
+          selectedStationId={selectedStation.id}
+          weatherNow={data.currentWeather}
+          showWeather={showWeather}
+          showReports={showReports}
+          onSelectStation={(stationId) => {
+            setSelectedStationId(stationId);
+            setInspectorOpen(true);
+          }}
+          onToggleWeather={() => setShowWeather((visible) => !visible)}
+          onToggleReports={() => setShowReports((visible) => !visible)}
+        />
 
-        {/* Inspector Panel - Hidden on mobile unless opened, visible on desktop */}
-        <div className="hidden lg:flex flex-col shrink-0 w-90 border-l border-slate-800/80 bg-slate-950/85 overflow-hidden order-3">
-          <InspectorPanel
-            isOpen={true}
-            selectedStation={selectedStation}
-            currentPoint={currentPoint}
-            chartSeries={chartSeries}
-            historicalEpisodes={
-              data.historicalEpisodes[selectedStation.id] ??
-              selectedStation.historicalEpisodes
-            }
-            similarEpisodes={
-              data.similarEpisodes[selectedStation.id] ??
-              selectedStation.similarEpisodes
-            }
-            seasonalStats={
-              data.seasonalStats[selectedStation.id] ??
-              selectedStation.seasonalStats
-            }
-            monthlyStats={
-              data.monthlyStats[selectedStation.id] ??
-              selectedStation.monthlyStats
-            }
-            monthsPl={data.monthsPl}
-            timeValue={timeValue}
-            tab={tab}
-            onTabChange={setTab}
-            onClose={() => setInspectorOpen(false)}
-            onOpen={() => setInspectorOpen(true)}
-          />
-        </div>
+        {showReports && (
+          <ReportsPanel data={data} onClose={() => setShowReports(false)} />
+        )}
+
+        <InspectorPanel
+          isOpen={inspectorOpen}
+          selectedStation={selectedStation}
+          currentPoint={currentPoint}
+          chartSeries={chartSeries}
+          historicalEpisodes={
+            data.historicalEpisodes[selectedStation.id] ??
+            selectedStation.historicalEpisodes
+          }
+          similarEpisodes={
+            data.similarEpisodes[selectedStation.id] ??
+            selectedStation.similarEpisodes
+          }
+          seasonalStats={
+            data.seasonalStats[selectedStation.id] ??
+            selectedStation.seasonalStats
+          }
+          monthlyStats={
+            data.monthlyStats[selectedStation.id] ??
+            selectedStation.monthlyStats
+          }
+          monthsPl={data.monthsPl}
+          timeValue={timeValue}
+          tab={tab}
+          onTabChange={setTab}
+          onClose={() => setInspectorOpen(false)}
+          onOpen={() => setInspectorOpen(true)}
+        />
+
+        <TimelineSlider timeValue={timeValue} onChange={setTimeValue} />
 
         {/* Mobile Sidebar Drawer */}
         {sidebarOpen && (

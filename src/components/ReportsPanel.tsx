@@ -36,20 +36,20 @@ export function ReportsPanel({ data, onClose }: ReportsPanelProps) {
 
   return (
     <section className="w-full h-full rounded-2xl border border-slate-700/70 bg-slate-950/95 backdrop-blur-xl shadow-2xl overflow-hidden flex flex-col">
-      <div className="flex items-center justify-between p-4 border-b border-slate-800">
-        <h3 className="font-bold text-white flex items-center gap-3 text-base">
-          <FileText size={18} className="text-amber-400 shrink-0" /> Raporty
+      <div className="flex items-center justify-between p-3 md:p-4 border-b border-slate-800">
+        <h3 className="font-bold text-white flex items-center gap-2 text-sm md:text-base">
+          <FileText size={16} className="text-cyan-400 shrink-0" /> Raporty
           modeli
         </h3>
         <button
           onClick={onClose}
-          className="text-slate-400 hover:text-slate-100 shrink-0 text-2xl"
+          className="text-slate-500 hover:text-slate-200 shrink-0"
         >
           ✕
         </button>
       </div>
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 sidebar-scroll">
-        <div className="h-28 md:h-32 bg-slate-900/60 rounded-xl p-4 border border-slate-800">
+      <div className="flex-1 overflow-y-auto p-2 md:p-4 space-y-2 md:space-y-4 sidebar-scroll">
+        <div className="h-28 md:h-32 bg-slate-900/60 rounded-lg md:rounded-xl p-2 md:p-3 border border-slate-800">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={sortedReports.map((report) => ({
@@ -116,14 +116,14 @@ export function ReportsPanel({ data, onClose }: ReportsPanelProps) {
           return (
             <article
               key={report.model_id}
-              className={`rounded-xl border p-4 ${index === 0 ? "border-cyan-500/40 bg-cyan-500/5" : "border-slate-700/60 bg-slate-900/60"}`}
+              className={`rounded-lg md:rounded-xl border p-2 md:p-3 ${index === 0 ? "border-cyan-500/40 bg-cyan-500/5" : "border-slate-700/60 bg-slate-900/60"}`}
             >
-              <div className="flex items-start justify-between gap-3">
+              <div className="flex items-start justify-between gap-2 md:gap-3">
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-white truncate">
+                  <p className="text-xs md:text-sm font-semibold text-white truncate">
                     {modelConfig.name}
                   </p>
-                  <p className="text-xs text-slate-400 mt-1 truncate">
+                  <p className="text-[10px] md:text-[11px] text-slate-400 mt-1 truncate">
                     {modelConfig.type}
                   </p>
                 </div>
@@ -132,28 +132,28 @@ export function ReportsPanel({ data, onClose }: ReportsPanelProps) {
                     href={pdfUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-2 text-xs px-3 py-2 rounded-full border border-cyan-500/40 text-cyan-300 hover:border-cyan-400/60 hover:bg-cyan-500/10 whitespace-nowrap shrink-0 bg-cyan-500/10"
+                    className="inline-flex items-center gap-1 text-[10px] md:text-[11px] px-2 py-1 rounded-full border border-cyan-500/40 text-cyan-300 hover:border-cyan-400/60 hover:bg-cyan-500/10 whitespace-nowrap shrink-0"
                   >
-                    📄 PDF
+                    PDF
                   </a>
                 )}
               </div>
-              <div className="grid grid-cols-3 gap-2 text-sm mt-4 text-slate-300">
-                <div className="rounded-lg bg-slate-950/70 p-3 border border-slate-800">
-                  <p className="text-slate-400 text-xs font-semibold">Dokładność</p>
-                  <p className="font-bold text-white text-base mt-1">
+              <div className="grid grid-cols-3 gap-1 md:gap-2 text-[10px] md:text-[11px] mt-2 md:mt-3 text-slate-300">
+                <div className="rounded-lg bg-slate-950/70 p-1.5 md:p-2 border border-slate-800">
+                  <p className="text-slate-500 text-[9px]">Dokładność</p>
+                  <p className="font-semibold text-white text-xs mt-0.5">
                     {(report.accuracy * 100).toFixed(1)}%
                   </p>
                 </div>
-                <div className="rounded-lg bg-slate-950/70 p-3 border border-slate-800">
-                  <p className="text-slate-400 text-xs font-semibold">Epoki</p>
-                  <p className="font-bold text-white text-base mt-1">
+                <div className="rounded-lg bg-slate-950/70 p-1.5 md:p-2 border border-slate-800">
+                  <p className="text-slate-500 text-[9px]">Epoki</p>
+                  <p className="font-semibold text-white text-xs mt-0.5">
                     {report.epochs}
                   </p>
                 </div>
-                <div className="rounded-lg bg-slate-950/70 p-3 border border-slate-800">
-                  <p className="text-slate-400 text-xs font-semibold">Wiersze testu</p>
-                  <p className="font-bold text-white text-base mt-1">
+                <div className="rounded-lg bg-slate-950/70 p-1.5 md:p-2 border border-slate-800">
+                  <p className="text-slate-500 text-[9px]">Test</p>
+                  <p className="font-semibold text-white text-xs mt-0.5">
                     {report.test_rows}
                   </p>
                 </div>

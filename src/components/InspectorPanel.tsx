@@ -205,27 +205,27 @@ export function InspectorPanel({
 
   return (
     <section className="w-full h-full rounded-2xl border border-slate-700/70 bg-slate-950/95 backdrop-blur-xl shadow-2xl overflow-hidden flex flex-col">
-      <div className="p-4 border-b border-slate-800 flex items-start justify-between gap-4">
+      <div className="p-3 md:p-4 border-b border-slate-800 flex items-start justify-between gap-3 md:gap-4">
         <div className="flex-1 min-w-0">
-          <p className="text-xs uppercase tracking-[0.3em] text-slate-400 font-semibold">
-            Szczegóły stacji
+          <p className="text-[10px] uppercase tracking-[0.3em] text-slate-500">
+            Inspektor stacji
           </p>
-          <h2 className="text-lg font-bold text-white leading-tight truncate mt-1">
+          <h2 className="text-base md:text-xl font-bold text-white leading-tight truncate">
             {selectedStation.name}
           </h2>
           <span
-            className={`inline-flex items-center gap-1 mt-2 px-3 py-1 rounded text-xs font-bold uppercase tracking-wider border ${risk.bg}`}
+            className={`inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 rounded text-[10px] md:text-[11px] font-bold uppercase tracking-wider border ${risk.bg}`}
             style={{ color: risk.color, borderColor: risk.color + "60" }}
           >
             {selectedStation.riskLevel === "Critical" && (
-              <AlertTriangle size={12} />
+              <AlertTriangle size={10} />
             )}
             {risk.label}
           </span>
         </div>
         <button
           onClick={onClose}
-          className="text-slate-400 hover:text-slate-100 text-2xl leading-none shrink-0"
+          className="text-slate-500 hover:text-slate-200 text-lg leading-none shrink-0"
         >
           ✕
         </button>
@@ -234,16 +234,16 @@ export function InspectorPanel({
       <div className="flex border-b border-slate-800 bg-slate-900/60 overflow-x-auto">
         {(
           [
-            ["overview", <AlertTriangle size={14} />, "Przegląd"],
-            ["history", <Clock size={14} />, "Historia"],
-            ["seasonal", <TrendingUp size={14} />, "Sezonowość"],
-            ["similar", <BarChart2 size={14} />, "Podobne"],
+            ["overview", <AlertTriangle size={12} />, "Przegląd"],
+            ["history", <Clock size={12} />, "Historia"],
+            ["seasonal", <TrendingUp size={12} />, "Sezonowość"],
+            ["similar", <BarChart2 size={12} />, "Podobne"],
           ] as [Tab, ReactNode, string][]
         ).map(([id, icon, label]) => (
           <button
             key={id}
             onClick={() => onTabChange(id)}
-            className={`flex items-center justify-center gap-2 py-3 px-3 text-sm font-semibold transition-colors border-b-2 whitespace-nowrap ${tab === id ? "border-cyan-500 text-cyan-300" : "border-transparent text-slate-400 hover:text-slate-200"}`}
+            className={`flex items-center justify-center gap-1 py-2 md:py-2.5 px-2 md:px-4 text-[10px] md:text-[11px] font-medium transition-colors border-b-2 whitespace-nowrap ${tab === id ? "border-cyan-500 text-cyan-400" : "border-transparent text-slate-500 hover:text-slate-300"}`}
           >
             {icon}
             <span className="hidden sm:inline">{label}</span>
@@ -251,10 +251,10 @@ export function InspectorPanel({
         ))}
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 sidebar-scroll">
+      <div className="flex-1 overflow-y-auto p-2 md:p-4 space-y-2 md:space-y-4 sidebar-scroll">
         {tab === "overview" && (
           <>
-            <div className="grid grid-cols-3 gap-2 text-sm">
+            <div className="grid grid-cols-3 gap-1 md:gap-2 text-xs">
               {[
                 {
                   label: "Aktualny",
@@ -278,33 +278,33 @@ export function InspectorPanel({
               ].map((metric) => (
                 <div
                   key={metric.label}
-                  className="rounded-xl border border-slate-800 bg-slate-900/70 p-3"
+                  className="rounded-lg md:rounded-xl border border-slate-800 bg-slate-900/70 p-1.5 md:p-3"
                 >
-                  <p className="text-slate-400 text-xs font-semibold">
+                  <p className="text-slate-500 text-[10px] md:text-xs">
                     {metric.label}
                   </p>
                   <p
-                    className={`mt-2 font-mono text-lg font-bold ${metric.color}`}
+                    className={`mt-1 font-mono text-sm md:text-lg font-bold ${metric.color}`}
                     style={metric.style}
                   >
                     {metric.value}{" "}
-                    <span className="text-[11px] text-slate-500">cm</span>
+                    <span className="text-[10px] text-slate-500">cm</span>
                   </p>
                 </div>
               ))}
             </div>
 
-            <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
-              <div className="flex items-center justify-between mb-3">
-                <p className="text-xs uppercase tracking-widest text-slate-400 font-bold">
+            <div className="rounded-lg md:rounded-xl border border-slate-800 bg-slate-900/60 p-2 md:p-3">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-[9px] md:text-[10px] uppercase tracking-widest text-slate-500">
                   Poziom wody
                 </p>
-                <p className="text-xs text-slate-400 font-semibold">
+                <p className="text-[9px] md:text-[10px] text-slate-400">
                   {sliderLabel(timeValue)}
                 </p>
               </div>
               {chartStart && chartEnd && (
-                <p className="mb-3 text-sm text-slate-500 font-mono">
+                <p className="mb-2 text-[10px] md:text-[11px] text-slate-500 font-mono">
                   {formatDate(chartStart)} – {formatDate(chartEnd)}
                 </p>
               )}

@@ -24,18 +24,18 @@ export function StationSidebar({
 }: StationSidebarProps) {
   return (
     <div className="w-full h-full flex flex-col">
-      <div className="px-4 py-4 border-b border-slate-800/80 hidden">
+      <div className="px-3 md:px-4 py-3 md:py-4 border-b border-slate-800/80">
         <p className="text-[10px] uppercase tracking-[0.3em] text-slate-500 mb-1">
           Stacje
         </p>
-        <h2 className="text-lg font-bold text-white">
+        <h2 className="text-base md:text-lg font-bold text-white">
           Wybierz punkt pomiarowy
         </h2>
-        <p className="text-sm text-slate-400 mt-1">
+        <p className="text-xs md:text-sm text-slate-400 mt-1">
           Kliknij stację, aby przełączyć mapę i wykresy.
         </p>
       </div>
-      <div className="p-3 space-y-3 overflow-y-auto flex-1 sidebar-scroll">
+      <div className="p-2 md:p-3 space-y-2 md:space-y-3 overflow-y-auto flex-1 sidebar-scroll">
         {data.stations.map((station) => {
           const stationRisk = RISK[station.riskLevel];
           const isActive = station.id === selectedStationId;
@@ -43,19 +43,19 @@ export function StationSidebar({
             <button
               key={station.id}
               onClick={() => onSelectStation(station.id)}
-              className={`w-full text-left rounded-xl border px-3 py-3 transition-all text-base ${isActive ? "border-cyan-500/50 bg-cyan-500/10" : "border-slate-800 bg-slate-900/70 hover:border-slate-700 hover:bg-slate-800/70"}`}
+              className={`w-full text-left rounded-xl border px-2 md:px-3 py-2 md:py-3 transition-all text-sm md:text-base ${isActive ? "border-cyan-500/50 bg-cyan-500/10" : "border-slate-800 bg-slate-900/70 hover:border-slate-700 hover:bg-slate-800/70"}`}
             >
-              <div className="flex items-start justify-between gap-3">
+              <div className="flex items-start justify-between gap-2 md:gap-3">
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-white truncate text-lg">
+                  <p className="font-semibold text-white truncate">
                     {station.short_name}
                   </p>
-                  <p className="text-sm text-slate-400 mt-2 truncate">
+                  <p className="text-xs md:text-sm text-slate-400 mt-1 truncate">
                     {station.description}
                   </p>
                 </div>
                 <span
-                  className="text-[11px] uppercase tracking-wider px-2 py-1 rounded-full border whitespace-nowrap font-semibold"
+                  className="text-[10px] md:text-[11px] uppercase tracking-wider px-2 py-1 rounded-full border whitespace-nowrap"
                   style={{
                     color: stationRisk.color,
                     borderColor: stationRisk.color + "55",
@@ -64,7 +64,7 @@ export function StationSidebar({
                   {station.riskLevel}
                 </span>
               </div>
-              <div className="mt-3 h-2 rounded-full bg-slate-800 overflow-hidden">
+              <div className="mt-2 h-1.5 rounded-full bg-slate-800 overflow-hidden">
                 <div
                   className="h-full rounded-full"
                   style={{
@@ -101,18 +101,18 @@ export function StationSidebar({
             </p>
           </div>
         </div>
-        <div className="flex gap-3 text-sm">
+        <div className="flex gap-2 text-xs md:text-sm">
           <button
             onClick={onToggleWeather}
-            className={`flex-1 rounded-xl border px-4 py-3 font-semibold transition-colors ${showWeather ? "bg-cyan-500/15 border-cyan-500/40 text-cyan-300 hover:bg-cyan-500/25" : "bg-slate-900 border-slate-700 text-slate-400 hover:bg-slate-800"}`}
+            className={`flex-1 rounded-xl border px-2 md:px-3 py-1.5 md:py-2 font-semibold transition-colors ${showWeather ? "bg-cyan-500/15 border-cyan-500/40 text-cyan-300" : "bg-slate-900 border-slate-700 text-slate-400"}`}
           >
-            ☁️ Opady
+            Opady
           </button>
           <button
             onClick={onToggleReports}
-            className={`flex-1 rounded-xl border px-4 py-3 font-semibold transition-colors ${showReports ? "bg-amber-500/15 border-amber-500/40 text-amber-300 hover:bg-amber-500/25" : "bg-slate-900 border-slate-700 text-slate-400 hover:bg-slate-800"}`}
+            className={`flex-1 rounded-xl border px-2 md:px-3 py-1.5 md:py-2 font-semibold transition-colors ${showReports ? "bg-amber-500/15 border-amber-500/40 text-amber-300" : "bg-slate-900 border-slate-700 text-slate-400"}`}
           >
-            📄 Raporty
+            Raporty
           </button>
         </div>
       </div>

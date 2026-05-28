@@ -11,7 +11,7 @@ import { ReportsPanel } from "./components/ReportsPanel";
 import { StationSidebar } from "./components/StationSidebar";
 import { TimelineSlider } from "./components/TimelineSlider";
 import type { DashboardPayload } from "./lib/dashboard-types";
-import { type Tab } from "./lib/dashboard-ui";
+import { type Tab, RISK } from "./lib/dashboard-ui";
 
 const FORECAST_STEP_HOURS = 3;
 const FORECAST_HORIZON_HOURS = 48;
@@ -308,49 +308,190 @@ function App() {
           <TimelineSlider timeValue={timeValue} onChange={setTimeValue} />
         </div>
 
-        {/* Mobile Sidebar Drawer */}
+        {/* Reports Panel - Desktop only */}
+        {showReports && (
+          <div className="hidden lg:block absolute right-90 top-0 bottom-20 z-20 w-105">
+            <ReportsPanel
+              data={data}
+              onClose={() => setShowReports(false)}
+              className="flex flex-col h-full rounded-2xl border border-slate-700/70 bg-slate-950/95 backdrop-blur-xl shadow-2xl overflow-hidden"
+            />
+          </div>
+        )}
+
+        {/* Mobile Sidebar Drawer — bottom sheet style */}
         {sidebarOpen && (
-          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm lg:hidden flex flex-col">
-            <div className="flex items-center justify-between bg-slate-950/95 backdrop-blur-xl border-b border-slate-800/80 px-4 py-4">
-              <h2 className="text-lg font-bold text-white">Stacje pomiarowe</h2>
-              <button
-                onClick={() => setSidebarOpen(false)}
-                className="text-slate-400 hover:text-slate-100 text-2xl"
-              >
-                ✕
-              </button>
-            </div>
-            <div className="flex-1 overflow-y-auto">
-              <StationSidebar
-                data={data}
-                selectedStationId={selectedStation.id}
-                weatherNow={data.currentWeather}
-                showWeather={showWeather}
-                showReports={showReports}
-                onSelectStation={(stationId) => {
-                  setSelectedStationId(stationId);
-                  setSidebarOpen(false);
-                }}
-                onToggleWeather={() => setShowWeather((visible) => !visible)}
-                onToggleReports={() => setShowReports((visible) => !visible)}
-              />
+          <div
+            className="fixed inset-0 z-50 lg:hidden"
+            onClick={() => setSidebarOpen(false)}
+          >
+            <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+            <div
+              className="absolute bottom-0 left-0 right-0 bg-slate-950 rounded-t-3xl shadow-2xl flex flex-col"
+              style={{ maxHeight: "88vh" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Handle */}
+              <div className="flex justify-center pt-3 pb-1">
+                <div className="w-10 h-1 rounded-full bg-slate-700" />
+              </div>
+
+              {/* Header */}
+              <div className="flex items-center justify-between px-5 pt-2 pb-3">
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.3em] text-cyan-400 mb-0.5">Stacje</p>
+                  <h2 className="text-lg font-bold text-white">Wybierz punkt pomiarowy</h2>
+                </div>
+                <button
+                  onClick={() => setSidebarOpen(false)}
+                  className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:text-white"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Station list */}
+              <div className="overflow-y-auto flex-1 px-4 pb-4 space-y-3">
+                {data.stations.map((station) => {
+                  const stationRisk = RISK[station.riskLevel];
+                  const isActive = station.id === selectedStation.id;
+                  return (
+                    <button
+                      key={station.id}
+                      onClick={() => {
+                        setSelectedStationId(station.id);
+                        setSidebarOpen(false);
+                        setInspectorOpen(true);
+                      }}
+                      className={`w-full text-left rounded-2xl border px-4 py-4 transition-all active:scale-[0.98] ${
+                        isActive
+                          ? "border-cyan-500/50 bg-cyan-500/10"
+                          : "border-slate-800 bg-slate-900/70"
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1">
+                          <p className="font-bold text-white text-base">{station.short_name}</p>
+                          <p className="text-xs text-slate-400 mt-1 leading-relaxed">{station.description}</p>
+                        </div>
+                        <span
+                          className="text-[10px] uppercase tracking-wider px-2.5 py-1 rounded-full border shrink-0 mt-0.5"
+                          style={{ color: stationRisk.color, borderColor: stationRisk.color + "55" }}
+                        >
+                          {stationRisk.label}
+                        </span>
+                      </div>
+                      <div className="mt-3 h-1.5 rounded-full bg-slate-800 overflow-hidden">
+                        <div
+                          className="h-full rounded-full transition-all"
+                          style={{
+                            width: `${Math.min(100, (station.waterLevel.current / Math.max(1, station.waterLevel.alarmLimit)) * 100)}%`,
+                            backgroundColor: stationRisk.color,
+                          }}
+                        />
+                      </div>
+                      <div className="flex gap-4 mt-3 text-[11px]">
+                        <span className="text-slate-500">Aktualny: <span className="text-white font-mono font-semibold">{station.waterLevel.current} cm</span></span>
+                        <span className="text-slate-500">Próg: <span className="text-red-400 font-mono font-semibold">{station.waterLevel.alarmLimit} cm</span></span>
+                      </div>
+                    </button>
+                  );
+                })}
+
+                {/* Weather summary */}
+                <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-4 mt-1">
+                  <p className="text-[10px] uppercase tracking-[0.25em] text-slate-500 mb-3">Aktualne warunki pogodowe</p>
+                  <div className="grid grid-cols-3 gap-2 text-center text-xs">
+                    <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-2.5">
+                      <p className="text-slate-500 leading-tight">Opad 24h</p>
+                      <p className="font-mono font-bold text-white mt-1">{data.currentWeather.rainfall_24h_mm.toFixed(1)}<span className="text-slate-500 font-normal"> mm</span></p>
+                    </div>
+                    <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-2.5">
+                      <p className="text-slate-500 leading-tight">Temperatura</p>
+                      <p className="font-mono font-bold text-white mt-1">{data.currentWeather.temperature_c.toFixed(1)}<span className="text-slate-500 font-normal">°C</span></p>
+                    </div>
+                    <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-2.5">
+                      <p className="text-slate-500 leading-tight">Ciśnienie</p>
+                      <p className="font-mono font-bold text-white mt-1">{Math.round(data.currentWeather.pressure_hpa)}<span className="text-slate-500 font-normal"> hPa</span></p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Safe area spacer */}
+              <div className="h-safe-area-inset-bottom" />
             </div>
           </div>
         )}
 
-        {/* Mobile Inspector Drawer */}
+        {/* Mobile Inspector Drawer — full-screen with tabs */}
         {inspectorOpen && (
-          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm lg:hidden flex flex-col">
-            <div className="flex items-center justify-between bg-slate-950/95 backdrop-blur-xl border-b border-slate-800/80 px-4 py-4">
-              <h2 className="text-lg font-bold text-white">Szczegóły stacji</h2>
-              <button
-                onClick={() => setInspectorOpen(false)}
-                className="text-slate-400 hover:text-slate-100 text-2xl"
-              >
-                ✕
-              </button>
+          <div className="fixed inset-0 z-50 lg:hidden flex flex-col bg-slate-950">
+            {/* Station header */}
+            <div
+              className="shrink-0 px-5 pt-5 pb-3 border-b border-slate-800/80"
+              style={{ background: "linear-gradient(180deg, #0f1629 0%, #0f172a 100%)" }}
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex-1">
+                  <p className="text-[10px] uppercase tracking-[0.3em] text-slate-500 mb-1">Inspektor stacji</p>
+                  <h2 className="text-xl font-bold text-white leading-tight">{selectedStation.name}</h2>
+                  <span
+                    className={`inline-flex items-center gap-1 mt-2 px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider border ${RISK[selectedStation.riskLevel].bg}`}
+                    style={{ color: RISK[selectedStation.riskLevel].color, borderColor: RISK[selectedStation.riskLevel].color + "60" }}
+                  >
+                    {selectedStation.riskLevel === "Critical" && "⚠ "}
+                    {RISK[selectedStation.riskLevel].label}
+                  </span>
+                </div>
+                <button
+                  onClick={() => setInspectorOpen(false)}
+                  className="w-9 h-9 rounded-full bg-slate-800/80 flex items-center justify-center text-slate-400 hover:text-white shrink-0"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Quick stats row */}
+              <div className="grid grid-cols-3 gap-2 mt-4">
+                {[
+                  { label: "Aktualny", value: `${currentPoint?.water_level_cm != null ? parseFloat(currentPoint.water_level_cm.toFixed(0)) : selectedStation.waterLevel.current} cm`, color: "text-white" },
+                  { label: "Predykcja +48h", value: `${selectedStation.waterLevel.predicted} cm`, color: "", style: { color: RISK[selectedStation.riskLevel].color } },
+                  { label: "Próg alarmowy", value: `${selectedStation.waterLevel.alarmLimit} cm`, color: "text-red-400" },
+                ].map((m) => (
+                  <div key={m.label} className="rounded-xl border border-slate-800 bg-slate-900/70 px-3 py-2.5">
+                    <p className="text-[10px] text-slate-500">{m.label}</p>
+                    <p className={`mt-1 font-mono text-base font-bold ${m.color}`} style={m.style}>{m.value}</p>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="flex-1 overflow-y-auto pb-24">
+
+            {/* Tab bar */}
+            <div className="shrink-0 flex border-b border-slate-800 bg-slate-900/60">
+              {([
+                ["overview", "📈", "Przegląd"],
+                ["history", "🕐", "Historia"],
+                ["seasonal", "📅", "Sezony"],
+                ["similar", "🔍", "Podobne"],
+              ] as [typeof tab, string, string][]).map(([id, icon, label]) => (
+                <button
+                  key={id}
+                  onClick={() => setTab(id)}
+                  className={`flex-1 flex flex-col items-center py-2.5 gap-0.5 text-[10px] font-semibold uppercase tracking-wide transition-colors border-b-2 ${
+                    tab === id
+                      ? "border-cyan-500 text-cyan-400"
+                      : "border-transparent text-slate-500"
+                  }`}
+                >
+                  <span>{icon}</span>
+                  <span>{label}</span>
+                </button>
+              ))}
+            </div>
+
+            {/* Scrollable content */}
+            <div className="flex-1 overflow-y-auto">
               <InspectorPanel
                 isOpen={true}
                 selectedStation={selectedStation}
@@ -378,42 +519,57 @@ function App() {
                 onTabChange={setTab}
                 onClose={() => setInspectorOpen(false)}
                 onOpen={() => setInspectorOpen(true)}
+                mobileMode={true}
               />
             </div>
-            {/* Timeline Slider in Inspector Drawer */}
-            <div className="bg-slate-950/95 backdrop-blur-xl border-t border-slate-800/80 px-4 py-3">
-              <TimelineSlider timeValue={timeValue} onChange={setTimeValue} mobile={true} />
+
+            {/* Timeline at bottom */}
+            <div className="shrink-0 bg-slate-950/98 border-t border-slate-800/80 px-4 py-3">
+              <div className="flex items-center justify-between text-[11px] text-slate-400 font-semibold mb-2">
+                <span className="text-slate-300">-48h</span>
+                <span className="text-slate-300">Teraz</span>
+                <span className="text-cyan-300">+48h</span>
+              </div>
+              <div className="relative h-8 flex items-center">
+                <div className="absolute inset-x-0 h-2 rounded-full bg-gradient-to-r from-slate-700 via-slate-500 to-cyan-500/60" />
+                <div
+                  className="absolute w-5 h-5 rounded-full bg-white ring-2 ring-slate-950 shadow-[0_0_12px_rgba(255,255,255,0.9)] pointer-events-none"
+                  style={{ left: `${((timeValue - (-48)) / 96) * 100}%`, transform: "translateX(-50%)" }}
+                />
+                <input
+                  type="range"
+                  min={-48}
+                  max={48}
+                  step={3}
+                  value={timeValue}
+                  onChange={(e) => setTimeValue(Number(e.target.value))}
+                  className="timeline-slider w-full absolute inset-0 opacity-0 cursor-pointer z-10"
+                />
+              </div>
+              <p className="text-center text-[11px] text-cyan-300 font-semibold mt-2">
+                {timeValue === 0 ? "⚡ Bieżąca godzina" : timeValue > 0 ? `+${timeValue}h od teraz` : `${timeValue}h temu`}
+              </p>
             </div>
           </div>
         )}
-
-        {/* Reports Panel - Desktop only */}
-        {showReports && (
-          <div className="hidden lg:block absolute right-90 top-0 bottom-20 z-20 w-105">
-            <ReportsPanel
-              data={data}
-              onClose={() => setShowReports(false)}
-              className="flex flex-col h-full rounded-2xl border border-slate-700/70 bg-slate-950/95 backdrop-blur-xl shadow-2xl overflow-hidden"
-            />
-          </div>
-        )}
-
-
 
         {/* Mobile Reports Drawer */}
         {showReports && !sidebarOpen && !inspectorOpen && (
-          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm lg:hidden flex flex-col">
-            <div className="flex items-center justify-between bg-slate-950/95 backdrop-blur-xl border-b border-slate-800/80 px-4 py-4">
-              <h2 className="text-lg font-bold text-white">Raporty modeli</h2>
+          <div className="fixed inset-0 z-50 lg:hidden flex flex-col bg-slate-950">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-800/80" style={{ background: "linear-gradient(180deg, #0f1629 0%, #0f172a 100%)" }}>
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.3em] text-cyan-400 mb-0.5">Modele AI</p>
+                <h2 className="text-lg font-bold text-white">Raporty modeli</h2>
+              </div>
               <button
                 onClick={() => setShowReports(false)}
-                className="text-slate-400 hover:text-slate-100 text-2xl"
+                className="w-9 h-9 rounded-full bg-slate-800/80 flex items-center justify-center text-slate-400 hover:text-white"
               >
                 ✕
               </button>
             </div>
             <div className="flex-1 overflow-y-auto">
-              <ReportsPanel data={data} onClose={() => setShowReports(false)} />
+              <ReportsPanel data={data} onClose={() => setShowReports(false)} hideHeader={true} />
             </div>
           </div>
         )}

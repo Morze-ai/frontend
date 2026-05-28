@@ -16,6 +16,7 @@ type ReportsPanelProps = {
   data: DashboardPayload;
   onClose: () => void;
   className?: string;
+  hideHeader?: boolean;
 };
 
 const MODEL_CONFIG: Record<string, { name: string; type: string }> = {
@@ -30,24 +31,26 @@ const MODEL_CONFIG: Record<string, { name: string; type: string }> = {
   },
 };
 
-export function ReportsPanel({ data, onClose, className }: ReportsPanelProps) {
+export function ReportsPanel({ data, onClose, className, hideHeader = false }: ReportsPanelProps) {
   const sortedReports = [...data.modelReports].sort(
     (a, b) => b.accuracy - a.accuracy,
   );
 
   return (
     <section className={className ?? "flex flex-col h-full overflow-hidden"}>
-      <div className="flex items-center justify-between p-4 border-b border-slate-800">
-        <h3 className="font-bold text-white flex items-center gap-2">
-          <FileText size={16} className="text-cyan-400" /> Raporty modeli
-        </h3>
-        <button
-          onClick={onClose}
-          className="text-slate-500 hover:text-slate-200"
-        >
-          <X size={16} />
-        </button>
-      </div>
+      {!hideHeader && (
+        <div className="flex items-center justify-between p-4 border-b border-slate-800">
+          <h3 className="font-bold text-white flex items-center gap-2">
+            <FileText size={16} className="text-cyan-400" /> Raporty modeli
+          </h3>
+          <button
+            onClick={onClose}
+            className="text-slate-500 hover:text-slate-200"
+          >
+            <X size={16} />
+          </button>
+        </div>
+      )}
       <div className="flex-1 overflow-y-auto p-4 space-y-4 sidebar-scroll">
         <div className="h-32 bg-slate-900/60 rounded-xl p-3 border border-slate-800">
           <ResponsiveContainer width="100%" height="100%">

@@ -269,9 +269,7 @@ function App() {
           />
         </div>
 
-        {showReports && (
-          <ReportsPanel data={data} onClose={() => setShowReports(false)} />
-        )}
+
 
         {/* Desktop Inspector - Hidden on mobile */}
         <div className="hidden lg:block">
@@ -390,38 +388,91 @@ function App() {
         )}
 
         {/* Reports Panel - Desktop only */}
-        {showReports && !sidebarOpen && !inspectorOpen && (
+        {showReports && (
           <div className="hidden lg:block absolute right-90 top-0 bottom-20 z-20 w-105">
-            <ReportsPanel data={data} onClose={() => setShowReports(false)} />
+            <ReportsPanel
+              data={data}
+              onClose={() => setShowReports(false)}
+              className="flex flex-col h-full rounded-2xl border border-slate-700/70 bg-slate-950/95 backdrop-blur-xl shadow-2xl overflow-hidden"
+            />
+          </div>
+        )}
+
+
+
+        {/* Mobile Reports Drawer */}
+        {showReports && !sidebarOpen && !inspectorOpen && (
+          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm lg:hidden flex flex-col">
+            <div className="flex items-center justify-between bg-slate-950/95 backdrop-blur-xl border-b border-slate-800/80 px-4 py-4">
+              <h2 className="text-lg font-bold text-white">Raporty modeli</h2>
+              <button
+                onClick={() => setShowReports(false)}
+                className="text-slate-400 hover:text-slate-100 text-2xl"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto">
+              <ReportsPanel data={data} onClose={() => setShowReports(false)} />
+            </div>
           </div>
         )}
 
         {/* Mobile Control Buttons */}
-        <div className="fixed bottom-0 left-0 right-0 z-30 flex gap-3 px-3 py-3 lg:hidden bg-slate-950/95 backdrop-blur-xl border-t border-slate-800/80 flex-wrap">
-          <button
-            onClick={() => setSidebarOpen(true)}
-            className="flex-1 min-w-[90px] bg-cyan-500/20 border border-cyan-500/40 rounded-lg px-3 py-3 text-sm font-semibold text-cyan-300 hover:bg-cyan-500/30 active:bg-cyan-500/40 transition-colors"
-          >
-            📍
-            <br />
-            <span className="text-xs">Stacje</span>
-          </button>
-          <button
-            onClick={() => setInspectorOpen(true)}
-            className="flex-1 min-w-[90px] bg-amber-500/20 border border-amber-500/40 rounded-lg px-3 py-3 text-sm font-semibold text-amber-300 hover:bg-amber-500/30 active:bg-amber-500/40 transition-colors"
-          >
-            📊
-            <br />
-            <span className="text-xs">Szczegóły</span>
-          </button>
-          <button
-            onClick={() => setShowWeather(!showWeather)}
-            className={`flex-1 min-w-[90px] rounded-lg px-3 py-3 text-sm font-semibold transition-colors ${showWeather ? "bg-blue-500/20 border border-blue-500/40 text-blue-300 hover:bg-blue-500/30" : "bg-slate-700/30 border border-slate-700/50 text-slate-400 hover:bg-slate-700/40"}`}
-          >
-            ☁️
-            <br />
-            <span className="text-xs">Pogoda</span>
-          </button>
+        <div className="fixed bottom-0 left-0 right-0 z-30 lg:hidden bg-slate-950/95 backdrop-blur-xl border-t border-slate-800/80">
+          <div className="flex items-stretch h-16">
+            {/* Stacje */}
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="flex-1 flex flex-col items-center justify-center gap-1 text-cyan-300 active:bg-slate-800/60 transition-colors"
+            >
+              <span className="text-lg leading-none">📍</span>
+              <span className="text-[10px] font-semibold tracking-wide uppercase">Stacje</span>
+            </button>
+
+            {/* Divider */}
+            <div className="w-px bg-slate-800/80 self-stretch" />
+
+            {/* Szczegóły */}
+            <button
+              onClick={() => setInspectorOpen(true)}
+              className="flex-1 flex flex-col items-center justify-center gap-1 text-amber-300 active:bg-slate-800/60 transition-colors"
+            >
+              <span className="text-lg leading-none">📊</span>
+              <span className="text-[10px] font-semibold tracking-wide uppercase">Szczegóły</span>
+            </button>
+
+            {/* Divider */}
+            <div className="w-px bg-slate-800/80 self-stretch" />
+
+            {/* Raporty */}
+            <button
+              onClick={() => setShowReports((v) => !v)}
+              className={`flex-1 flex flex-col items-center justify-center gap-1 transition-colors active:bg-slate-800/60 ${
+                showReports ? "text-emerald-300" : "text-slate-400"
+              }`}
+            >
+              <span className="text-lg leading-none">📄</span>
+              <span className="text-[10px] font-semibold tracking-wide uppercase">Raporty</span>
+            </button>
+
+            {/* Divider */}
+            <div className="w-px bg-slate-800/80 self-stretch" />
+
+            {/* Pogoda toggle - compact */}
+            <button
+              onClick={() => setShowWeather((v) => !v)}
+              className={`flex-1 flex flex-col items-center justify-center gap-1 transition-colors active:bg-slate-800/60 relative ${
+                showWeather ? "text-blue-300" : "text-slate-500"
+              }`}
+            >
+              <span className="text-lg leading-none">☁️</span>
+              <span className="text-[10px] font-semibold tracking-wide uppercase">Opady</span>
+              {showWeather && (
+                <span className="absolute top-2 right-3 w-1.5 h-1.5 rounded-full bg-blue-400" />
+              )}
+            </button>
+          </div>
         </div>
       </div>
     </div>

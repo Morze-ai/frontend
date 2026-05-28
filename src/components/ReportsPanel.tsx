@@ -15,6 +15,7 @@ import type { DashboardPayload } from "../lib/dashboard-types";
 type ReportsPanelProps = {
   data: DashboardPayload;
   onClose: () => void;
+  className?: string;
 };
 
 const MODEL_CONFIG: Record<string, { name: string; type: string }> = {
@@ -29,13 +30,13 @@ const MODEL_CONFIG: Record<string, { name: string; type: string }> = {
   },
 };
 
-export function ReportsPanel({ data, onClose }: ReportsPanelProps) {
+export function ReportsPanel({ data, onClose, className }: ReportsPanelProps) {
   const sortedReports = [...data.modelReports].sort(
     (a, b) => b.accuracy - a.accuracy,
   );
 
   return (
-    <section className="absolute top-4 right-[448px] bottom-[108px] z-20 w-[420px] max-w-[calc(100vw-2rem)] rounded-2xl border border-slate-700/70 bg-slate-950/95 backdrop-blur-xl shadow-2xl overflow-hidden flex flex-col">
+    <section className={className ?? "flex flex-col h-full overflow-hidden"}>
       <div className="flex items-center justify-between p-4 border-b border-slate-800">
         <h3 className="font-bold text-white flex items-center gap-2">
           <FileText size={16} className="text-cyan-400" /> Raporty modeli

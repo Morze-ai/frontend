@@ -1,7 +1,7 @@
 import "leaflet/dist/leaflet.css";
 
 import "./App.css";
-import { loadDashboard, loadShapFeatures } from "./lib/dashboard-api";
+import { loadDashboard } from "./lib/dashboard-api";
 import { useEffect, useState } from "react";
 import { AlertTriangle, Info } from "lucide-react";
 
@@ -78,16 +78,9 @@ function App() {
     if (isRetry) setLoading(true);
     let alive = true;
 
-    Promise.all([loadDashboard(), loadShapFeatures("mlp_water_level")])
-      .then(([payload, shapFeatures]) => {
+    loadDashboard()
+      .then((payload) => {
         if (!alive) return;
-
-        if (shapFeatures.length > 0) {
-          payload.stations = payload.stations.map((station) => ({
-            ...station,
-            shapFeatures,
-          }));
-        }
 
         setData(payload);
         setSelectedStationId(
@@ -680,22 +673,7 @@ function App() {
               <span className="text-[10px] font-semibold tracking-wide uppercase">Raporty</span>
             </button>
 
-            {/* Divider */}
-            <div className="w-px bg-slate-800/80 self-stretch" />
 
-            {/* Pogoda toggle - compact */}
-            <button
-              onClick={() => setShowWeather((v) => !v)}
-              className={`flex-1 flex flex-col items-center justify-center gap-1 transition-colors active:bg-slate-800/60 relative ${
-                showWeather ? "text-blue-300" : "text-slate-500"
-              }`}
-            >
-              <span className="text-lg leading-none">☁️</span>
-              <span className="text-[10px] font-semibold tracking-wide uppercase">Opady</span>
-              {showWeather && (
-                <span className="absolute top-2 right-3 w-1.5 h-1.5 rounded-full bg-blue-400" />
-              )}
-            </button>
           </div>
         </div>
       </div>

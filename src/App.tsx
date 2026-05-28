@@ -62,6 +62,8 @@ function App() {
   const [data, setData] = useState<DashboardPayload | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [retryCountdown, setRetryCountdown] = useState(0);
+  const [retryCount, setRetryCount] = useState(0);
   const [selectedStationId, setSelectedStationId] = useState<string | null>(
     null,
   );
@@ -72,7 +74,8 @@ function App() {
   const [inspectorOpen, setInspectorOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  useEffect(() => {
+  const loadData = (isRetry = false) => {
+    if (isRetry) setLoading(true);
     let alive = true;
 
     Promise.all([loadDashboard(), loadShapFeatures("mlp_water_level")])
@@ -95,6 +98,8 @@ function App() {
             null,
         );
         setError(null);
+        setRetryCount(0);
+        setRetryCountdown(0);
       })
       .catch((caughtError) => {
         if (!alive) return;
@@ -103,15 +108,34 @@ function App() {
             ? caughtError.message
             : "Nie udało się pobrać danych z backendu.",
         );
+        setRetryCount((c) => c + 1);
+        // Auto-retry countdown: 30s
+        setRetryCountdown(30);
       })
       .finally(() => {
         if (alive) setLoading(false);
       });
 
-    return () => {
-      alive = false;
-    };
+    return () => { alive = false; };
+  };
+
+  useEffect(() => {
+    return loadData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Auto-retry countdown timer
+  useEffect(() => {
+    if (retryCountdown <= 0) return;
+    if (retryCountdown === 1) {
+      // Fire retry when countdown hits 0
+      const t = setTimeout(() => loadData(true), 1000);
+      return () => clearTimeout(t);
+    }
+    const t = setTimeout(() => setRetryCountdown((c) => c - 1), 1000);
+    return () => clearTimeout(t);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [retryCountdown]);
 
   useEffect(() => {
     if (!data || data.stations.length === 0) return;
@@ -140,14 +164,58 @@ function App() {
   }
 
   if (error) {
+    const RETRY_TOTAL = 30;
     return (
       <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center p-6">
-        <div className="max-w-xl w-full rounded-2xl border border-red-500/30 bg-red-500/10 p-6 text-center">
-          <AlertTriangle size={28} className="mx-auto mb-3 text-red-300" />
-          <h1 className="text-xl font-bold mb-2">
-            Nie udało się załadować dashboardu
-          </h1>
-          <p className="text-sm text-slate-300">{error}</p>
+        <div className="max-w-lg w-full space-y-6 text-center">
+          {/* Animated icon */}
+          <div className="relative mx-auto w-20 h-20">
+            <div className="absolute inset-0 rounded-full bg-red-500/20 animate-ping" />
+            <div className="relative w-20 h-20 rounded-full bg-red-500/10 border border-red-500/30 flex items-center justify-center">
+              <AlertTriangle size={32} className="text-red-400" />
+            </div>
+          </div>
+
+          <div>
+            <h1 className="text-2xl font-black text-white mb-2">Backend niedostępny</h1>
+            <p className="text-sm text-slate-400 leading-relaxed">
+              Serwer zwrócił błąd. Dane nie mogły zostać załadowane.<br />
+              Aplikacja spróbuje połączyć się automatycznie.
+            </p>
+          </div>
+
+          {/* Error detail */}
+          <div className="rounded-xl border border-red-500/20 bg-red-500/5 px-4 py-3 text-left">
+            <p className="text-[11px] uppercase tracking-wider text-red-400/70 mb-1">Szczegóły błędu</p>
+            <p className="text-xs text-slate-300 font-mono break-all">{error}</p>
+          </div>
+
+          {/* Countdown + progress bar */}
+          {retryCountdown > 0 && (
+            <div className="space-y-2">
+              <p className="text-sm text-slate-400">
+                Następna próba za{" "}
+                <span className="text-cyan-300 font-bold tabular-nums">{retryCountdown}s</span>
+                {retryCount > 1 && (
+                  <span className="text-slate-500"> · próba #{retryCount + 1}</span>
+                )}
+              </p>
+              <div className="h-1 rounded-full bg-slate-800 overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-cyan-500 transition-all duration-1000"
+                  style={{ width: `${((RETRY_TOTAL - retryCountdown) / RETRY_TOTAL) * 100}%` }}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Manual retry */}
+          <button
+            onClick={() => { setRetryCountdown(0); loadData(true); }}
+            className="w-full rounded-xl border border-cyan-500/40 bg-cyan-500/10 px-4 py-3 text-sm font-bold text-cyan-300 hover:bg-cyan-500/20 active:scale-95 transition-all"
+          >
+            ↻ Spróbuj teraz
+          </button>
         </div>
       </div>
     );

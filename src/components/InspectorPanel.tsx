@@ -51,6 +51,7 @@ type InspectorPanelProps = {
   onClose: () => void;
   onOpen: () => void;
   mobileMode?: boolean;
+  showReports?: boolean;
 };
 
 export function InspectorPanel({
@@ -69,6 +70,7 @@ export function InspectorPanel({
   onClose,
   onOpen,
   mobileMode = false,
+  showReports = false,
 }: InspectorPanelProps) {
   const SHAP_LABELS: Record<string, string> = {
     water_level_cm: "Poziom wody (cm)",
@@ -201,7 +203,7 @@ export function InspectorPanel({
     return (
       <button
         onClick={onOpen}
-        className="absolute top-4 right-4 z-20 rounded-xl border border-slate-700 bg-slate-950/90 px-4 py-2 text-sm font-medium text-slate-300 shadow-xl hover:border-slate-600 hover:text-slate-100"
+        className={`absolute top-4 z-20 rounded-xl border border-slate-700 bg-slate-950/90 px-4 py-2 text-sm font-medium text-slate-300 shadow-xl hover:border-slate-600 hover:text-slate-100 transition-all duration-300 ${showReports ? "right-[450px]" : "right-4"}`}
       >
         <Info size={14} className="inline-block mr-2" />{" "}
         {selectedStation.short_name}

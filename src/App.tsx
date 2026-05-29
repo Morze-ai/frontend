@@ -343,6 +343,7 @@ function App() {
         <div className="hidden lg:block">
           <InspectorPanel
             isOpen={inspectorOpen}
+            showReports={showReports}
             selectedStation={selectedStation}
             currentPoint={currentPoint}
             chartSeries={chartSeries}
@@ -378,7 +379,7 @@ function App() {
 
         {/* Reports Panel - Desktop only */}
         {showReports && (
-          <div className="hidden lg:block absolute right-90 top-0 bottom-20 z-20 w-105">
+          <div className={`hidden lg:block absolute top-4 bottom-[108px] z-20 w-[420px] transition-all duration-300 ${inspectorOpen ? "right-[450px]" : "right-4"}`}>
             <ReportsPanel
               data={data}
               onClose={() => setShowReports(false)}

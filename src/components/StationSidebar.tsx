@@ -23,7 +23,7 @@ export function StationSidebar({
   onToggleReports,
 }: StationSidebarProps) {
   return (
-    <aside className="absolute top-4 left-4 bottom-4 z-20 w-[340px] max-w-[calc(100vw-2rem)] rounded-2xl border border-slate-700/70 bg-slate-950/92 backdrop-blur-xl shadow-2xl overflow-hidden flex flex-col">
+    <aside className="absolute top-4 left-4 bottom-[108px] z-20 w-[340px] max-w-[calc(100vw-2rem)] rounded-2xl border border-slate-700/70 bg-slate-950/92 backdrop-blur-xl shadow-2xl overflow-hidden flex flex-col">
       <div className="px-4 py-4 border-b border-slate-800/80">
         <p className="text-[10px] uppercase tracking-[0.3em] text-slate-500 mb-1">
           Stacje

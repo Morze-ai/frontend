@@ -13,7 +13,8 @@ export async function loadDashboard(): Promise<DashboardPayload> {
   if (!response.ok) {
     const message = await response.text().catch(() => "");
     throw new Error(
-      message || `Błąd serwera (${response.status}) — spróbuj ponownie za chwilę.`,
+      message ||
+        `Błąd serwera (${response.status}) — spróbuj ponownie za chwilę.`,
     );
   }
 

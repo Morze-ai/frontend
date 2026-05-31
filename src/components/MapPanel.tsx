@@ -1,11 +1,15 @@
-import { useEffect } from 'react';
-import L from 'leaflet';
+import { useEffect } from "react";
+import L from "leaflet";
 import {
-  CircleMarker, MapContainer, TileLayer, Tooltip as LeafletTooltip, useMap,
-} from 'react-leaflet';
+  CircleMarker,
+  MapContainer,
+  TileLayer,
+  Tooltip as LeafletTooltip,
+  useMap,
+} from "react-leaflet";
 
-import type { Station } from '../lib/dashboard-types';
-import { RISK } from '../lib/dashboard-ui';
+import type { Station } from "../lib/dashboard-types";
+import { RISK } from "../lib/dashboard-ui";
 
 type MapPanelProps = {
   stations: Station[];
@@ -30,11 +34,11 @@ function MapControls() {
   const map = useMap();
 
   useEffect(() => {
-    const zoomControl = L.control.zoom({ position: 'bottomright' });
+    const zoomControl = L.control.zoom({ position: "bottomright" });
 
     zoomControl.addTo(map);
 
-    zoomControl.getContainer()?.classList.add('leaflet-zoom-horizontal');
+    zoomControl.getContainer()?.classList.add("leaflet-zoom-horizontal");
 
     return () => {
       zoomControl.remove();
@@ -67,7 +71,10 @@ function WeatherOverlay({
   return (
     <>
       {circles.map(([latOffset, lngOffset, weight, radius], index) => {
-        const centerPoint: [number, number] = [center[0] + latOffset, center[1] + lngOffset];
+        const centerPoint: [number, number] = [
+          center[0] + latOffset,
+          center[1] + lngOffset,
+        ];
         const localRainfall = rainfallMm * weight;
         return (
           <CircleMarker
@@ -75,10 +82,10 @@ function WeatherOverlay({
             center={centerPoint}
             radius={radius + intensity * 18 * weight}
             pathOptions={{
-              color: '#38bdf8',
+              color: "#38bdf8",
               weight: 1,
               opacity: 0.6,
-              fillColor: '#38bdf8',
+              fillColor: "#38bdf8",
               fillOpacity: 0.12 + intensity * 0.18 * weight,
             }}
           >
@@ -100,16 +107,33 @@ export function MapPanel({
   onSelectStation,
   onOpenInspector,
 }: MapPanelProps) {
+  const polandBounds: L.LatLngBoundsExpression = [
+    [48.9, 13.8],
+    [54.9, 24.3],
+  ];
+
   return (
     <div className="absolute inset-0 z-0">
-      <MapContainer center={selectedStation.coords} zoom={10} className="absolute inset-0" zoomControl={false} scrollWheelZoom>
+      <MapContainer
+        center={selectedStation.coords}
+        zoom={10}
+        className="absolute inset-0"
+        zoomControl={false}
+        scrollWheelZoom
+        maxBounds={polandBounds}
+        maxBoundsViscosity={1.0}
+      >
         <TileLayer
           url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
           attribution="&copy; OpenStreetMap contributors &copy; CARTO"
         />
         <MapFocus center={selectedStation.coords} />
         <MapControls />
-        <WeatherOverlay center={selectedStation.coords} rainfallMm={weatherRainMm} show={showWeather} />
+        <WeatherOverlay
+          center={selectedStation.coords}
+          rainfallMm={weatherRainMm}
+          show={showWeather}
+        />
 
         {stations.map((station) => {
           const stationRisk = RISK[station.riskLevel];
@@ -126,7 +150,12 @@ export function MapPanel({
                 opacity: 1,
                 weight: isActive ? 2 : 1,
               }}
-              eventHandlers={{ click: () => { onSelectStation(station.id); onOpenInspector(); } }}
+              eventHandlers={{
+                click: () => {
+                  onSelectStation(station.id);
+                  onOpenInspector();
+                },
+              }}
             >
               <LeafletTooltip direction="top" offset={[0, -4]} opacity={0.95}>
                 <div className="text-xs">

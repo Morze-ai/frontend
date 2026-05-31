@@ -1,4 +1,5 @@
 import type { DashboardPayload } from "./dashboard-types";
+import { normalizeDashboard } from "./dashboard-normalize";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "/api";
 const BACKEND_BASE =
@@ -10,13 +11,16 @@ export async function loadDashboard(): Promise<DashboardPayload> {
   });
 
   if (!response.ok) {
-    const message = await response.text();
+    const message = await response.text().catch(() => "");
     throw new Error(
-      message || `Failed to load dashboard data (${response.status})`,
+      message ||
+        `Błąd serwera (${response.status}) — spróbuj ponownie za chwilę.`,
     );
   }
 
-  return response.json() as Promise<DashboardPayload>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const raw: any = await response.json();
+  return normalizeDashboard(raw);
 }
 
 export async function loadShapFeatures(

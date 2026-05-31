@@ -50,6 +50,8 @@ type InspectorPanelProps = {
   onTabChange: (tab: Tab) => void;
   onClose: () => void;
   onOpen: () => void;
+  mobileMode?: boolean;
+  showReports?: boolean;
 };
 
 export function InspectorPanel({
@@ -67,6 +69,8 @@ export function InspectorPanel({
   onTabChange,
   onClose,
   onOpen,
+  mobileMode = false,
+  showReports = false,
 }: InspectorPanelProps) {
   const SHAP_LABELS: Record<string, string> = {
     water_level_cm: "Poziom wody (cm)",
@@ -191,11 +195,15 @@ export function InspectorPanel({
   const chartStart = chartSeries[0]?.timestamp;
   const chartEnd = chartSeries[chartSeries.length - 1]?.timestamp;
 
-  if (!isOpen) {
+  // In mobile mode: render only content, skip to normal rendering below.
+  // The section/header/tabs wrapper is handled externally by the mobile drawer in App.tsx.
+  // We use a flag to skip the outer wrapper rendering.
+
+  if (!isOpen && !mobileMode) {
     return (
       <button
         onClick={onOpen}
-        className="absolute top-4 right-4 z-20 rounded-xl border border-slate-700 bg-slate-950/90 px-4 py-2 text-sm font-medium text-slate-300 shadow-xl hover:border-slate-600 hover:text-slate-100"
+        className={`absolute top-4 z-20 rounded-xl border border-slate-700 bg-slate-950/90 px-4 py-2 text-sm font-medium text-slate-300 shadow-xl hover:border-slate-600 hover:text-slate-100 transition-all duration-300 ${showReports ? "right-[450px]" : "right-4"}`}
       >
         <Info size={14} className="inline-block mr-2" />{" "}
         {selectedStation.short_name}
@@ -203,55 +211,9 @@ export function InspectorPanel({
     );
   }
 
-  return (
-    <section className="absolute top-4 right-4 bottom-[108px] z-20 w-[420px] max-w-[calc(100vw-2rem)] rounded-2xl border border-slate-700/70 bg-slate-950/95 backdrop-blur-xl shadow-2xl overflow-hidden flex flex-col">
-      <div className="p-4 border-b border-slate-800 flex items-start justify-between gap-4">
-        <div>
-          <p className="text-[10px] uppercase tracking-[0.3em] text-slate-500">
-            Inspektor stacji
-          </p>
-          <h2 className="text-xl font-bold text-white leading-tight">
-            {selectedStation.name}
-          </h2>
-          <span
-            className={`inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider border ${risk.bg}`}
-            style={{ color: risk.color, borderColor: risk.color + "60" }}
-          >
-            {selectedStation.riskLevel === "Critical" && (
-              <AlertTriangle size={10} />
-            )}
-            {risk.label}
-          </span>
-        </div>
-        <button
-          onClick={onClose}
-          className="text-slate-500 hover:text-slate-200 text-lg leading-none"
-        >
-          ✕
-        </button>
-      </div>
-
-      <div className="flex border-b border-slate-800 bg-slate-900/60">
-        {(
-          [
-            ["overview", <AlertTriangle size={12} />, "Przegląd"],
-            ["history", <Clock size={12} />, "Historia"],
-            ["seasonal", <TrendingUp size={12} />, "Sezonowość"],
-            ["similar", <BarChart2 size={12} />, "Podobne"],
-          ] as [Tab, ReactNode, string][]
-        ).map(([id, icon, label]) => (
-          <button
-            key={id}
-            onClick={() => onTabChange(id)}
-            className={`flex-1 flex items-center justify-center gap-1 py-2.5 text-[11px] font-medium transition-colors border-b-2 ${tab === id ? "border-cyan-500 text-cyan-400" : "border-transparent text-slate-500 hover:text-slate-300"}`}
-          >
-            {icon}
-            {label}
-          </button>
-        ))}
-      </div>
-
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 sidebar-scroll">
+  // Content shared between mobile and desktop
+  const contentArea = (
+    <div className="flex-1 overflow-y-auto p-4 space-y-4 sidebar-scroll">
         {tab === "overview" && (
           <>
             <div className="grid grid-cols-3 gap-2 text-xs">
@@ -666,6 +628,62 @@ export function InspectorPanel({
           </div>
         )}
       </div>
+  );
+
+  // In mobile mode: return only the content area (header/tabs handled by App.tsx mobile drawer)
+  if (mobileMode) {
+    return contentArea;
+  }
+
+  return (
+    <section className="absolute top-4 right-4 bottom-[108px] z-20 w-[420px] max-w-[calc(100vw-2rem)] rounded-2xl border border-slate-700/70 bg-slate-950/95 backdrop-blur-xl shadow-2xl overflow-hidden flex flex-col">
+      <div className="p-4 border-b border-slate-800 flex items-start justify-between gap-4">
+        <div>
+          <p className="text-[10px] uppercase tracking-[0.3em] text-slate-500">
+            Inspektor stacji
+          </p>
+          <h2 className="text-xl font-bold text-white leading-tight">
+            {selectedStation.name}
+          </h2>
+          <span
+            className={`inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider border ${risk.bg}`}
+            style={{ color: risk.color, borderColor: risk.color + "60" }}
+          >
+            {selectedStation.riskLevel === "Critical" && (
+              <AlertTriangle size={10} />
+            )}
+            {risk.label}
+          </span>
+        </div>
+        <button
+          onClick={onClose}
+          className="text-slate-500 hover:text-slate-200 text-lg leading-none"
+        >
+          ✕
+        </button>
+      </div>
+
+      <div className="flex border-b border-slate-800 bg-slate-900/60">
+        {(
+          [
+            ["overview", <AlertTriangle size={12} />, "Przegląd"],
+            ["history", <Clock size={12} />, "Historia"],
+            ["seasonal", <TrendingUp size={12} />, "Sezonowość"],
+            ["similar", <BarChart2 size={12} />, "Podobne"],
+          ] as [Tab, ReactNode, string][]
+        ).map(([id, icon, label]) => (
+          <button
+            key={id}
+            onClick={() => onTabChange(id)}
+            className={`flex-1 flex items-center justify-center gap-1 py-2.5 text-[11px] font-medium transition-colors border-b-2 ${tab === id ? "border-cyan-500 text-cyan-400" : "border-transparent text-slate-500 hover:text-slate-300"}`}
+          >
+            {icon}
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {contentArea}
     </section>
   );
 }
